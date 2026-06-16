@@ -1,0 +1,643 @@
+/* Reset CSS */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --bg-gradient: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fdf5f5 100%);
+    --text-primary: #123c5e;
+    --text-secondary: #ff3e6c;
+    --card-bg: rgba(255, 255, 255, 0.82);
+    --card-shadow: 0 15px 35px rgba(254, 154, 158, 0.25), 0 5px 15px rgba(254, 154, 158, 0.15);
+    --input-bg: #ffffff;
+    --input-border: #e2dfec;
+    --btn-gradient: linear-gradient(135deg, #a6e3fd 0%, #7db9f7 100%);
+    --btn-text: #0b4570;
+    
+    /* Font family */
+    --font-display: 'Paytone One', sans-serif;
+    --font-cursive: 'Tapestry', serif;
+    --font-rounded: 'Fredoka', 'Quicksand', -apple-system, sans-serif;
+    --font-normal: 'Quicksand', -apple-system, sans-serif;
+}
+
+body {
+    font-family: var(--font-normal);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+    background: #fecfef url('assets/background.svg') no-repeat center top;
+    background-size: cover;
+    background-attachment: fixed;
+    position: relative;
+}
+
+/* App Container */
+.app-container {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 40px 20px 80px 20px;
+    position: relative;
+    z-index: 1;
+}
+
+/* ----------------------------------------------------
+   DECORATIONS & FLOATING PARTICLES
+   ---------------------------------------------------- */
+.decorations {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+    overflow: hidden;
+}
+
+/* Cánh bướm lơ lửng */
+.butterfly {
+    position: absolute;
+    opacity: 0.6;
+    animation: hover-drift 8s ease-in-out infinite alternate;
+}
+
+.butterfly svg {
+    width: 100%;
+    height: 100%;
+}
+
+.butterfly.b1 {
+    width: 80px;
+    height: 80px;
+    top: 15%;
+    left: 10%;
+    transform: rotate(-15deg);
+    animation-duration: 9s;
+}
+
+.butterfly.b2 {
+    width: 70px;
+    height: 70px;
+    top: 10%;
+    left: 22%;
+    transform: rotate(25deg);
+    animation-duration: 7s;
+    animation-delay: -2s;
+}
+
+.butterfly.b3 {
+    width: 55px;
+    height: 55px;
+    top: 38%;
+    left: 5%;
+    transform: rotate(-40deg) scaleX(-1);
+    animation-duration: 8s;
+    animation-delay: -4s;
+}
+
+/* Ngôi sao lấp lánh */
+.star {
+    position: absolute;
+    color: #ffd885;
+    font-size: 24px;
+    opacity: 0.45;
+    text-shadow: 0 0 5px #fff;
+    animation: star-pulse 4s ease-in-out infinite alternate;
+}
+
+.star.s1 {
+    top: 25%;
+    right: 15%;
+    font-size: 28px;
+    animation-duration: 3s;
+}
+
+.star.s2 {
+    top: 45%;
+    left: 12%;
+    font-size: 20px;
+    animation-duration: 5s;
+    animation-delay: -1s;
+}
+
+.star.s3 {
+    top: 8%;
+    right: 35%;
+    font-size: 22px;
+    animation-duration: 4s;
+    animation-delay: -2s;
+}
+
+.star.s4 {
+    top: 60%;
+    right: 8%;
+    font-size: 32px;
+    animation-duration: 6s;
+    animation-delay: -3s;
+}
+
+/* Hạt bong bóng bay lơ lửng */
+.bg-bubbles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -2;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.bubble {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.45);
+    border-radius: 50%;
+    bottom: -100px;
+    animation: bubble-up 18s linear infinite;
+    pointer-events: none;
+}
+
+/* Keyframe Animations */
+@keyframes hover-drift {
+    0% {
+        transform: translateY(0) rotate(var(--rot, -15deg)) scale(1);
+    }
+    50% {
+        transform: translateY(-15px) translateX(10px) rotate(calc(var(--rot, -15deg) + 10deg)) scale(1.05);
+    }
+    100% {
+        transform: translateY(-5px) translateX(-5px) rotate(calc(var(--rot, -15deg) - 5deg)) scale(0.98);
+    }
+}
+
+@keyframes star-pulse {
+    0% {
+        transform: scale(0.8);
+        opacity: 0.3;
+    }
+    100% {
+        transform: scale(1.2);
+        opacity: 0.8;
+        text-shadow: 0 0 10px #ffeaa7, 0 0 20px #ffeaa7;
+    }
+}
+
+@keyframes bubble-up {
+    0% {
+        transform: translateY(0) scale(1);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.6;
+    }
+    90% {
+        opacity: 0.6;
+    }
+    100% {
+        transform: translateY(-120vh) scale(1.2);
+        opacity: 0;
+    }
+}
+
+/* ----------------------------------------------------
+   HEADER STYLING
+   ---------------------------------------------------- */
+.header {
+    text-align: center;
+    margin-bottom: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.logo-wrapper {
+    width: 100px;
+    height: 100px;
+    margin-bottom: 12px;
+    position: relative;
+    border-radius: 50%;
+    background: #ffffff;
+    box-shadow: 0 8px 20px rgba(255, 62, 108, 0.2);
+    border: 3.5px solid #ff3e6c;
+    padding: 2px;
+    overflow: hidden;
+}
+
+.club-logo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.logo-fallback {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.title-group {
+    font-family: var(--font-rounded);
+}
+
+.club-subtitle {
+    font-family: var(--font-cursive);
+    font-size: 1.35rem;
+    font-weight: 400;
+    color: var(--text-primary);
+    letter-spacing: 1px;
+    margin-bottom: 2px;
+}
+
+.club-title {
+    font-family: var(--font-display);
+    font-size: 1.7rem;
+    font-weight: 400;
+    color: var(--text-primary);
+    line-height: 1.2;
+    margin-bottom: 4px;
+    letter-spacing: -0.5px;
+}
+
+.page-title {
+    font-family: var(--font-display);
+    font-size: 2.4rem;
+    font-weight: 400;
+    color: var(--text-secondary);
+    line-height: 1.2;
+    letter-spacing: -0.5px;
+}
+
+/* ----------------------------------------------------
+   CALCULATOR CARD
+   ---------------------------------------------------- */
+.content-wrapper {
+    width: 100%;
+    max-width: 560px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.calculator-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    width: 100%;
+    border-radius: 28px;
+    padding: 35px 35px 40px 35px;
+    box-shadow: var(--card-shadow);
+    border: 1.5px solid rgba(255, 255, 255, 0.45);
+    text-align: center;
+    position: relative;
+    margin-bottom: 30px;
+}
+
+.card-prompt {
+    font-size: 1.25rem;
+    font-weight: 500;
+    margin-bottom: 25px;
+    color: #2c3e50;
+}
+
+.inputs-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 16px 24px;
+    font-size: 1.15rem;
+    border: 1px solid var(--input-border);
+    border-radius: 50px;
+    outline: none;
+    text-align: center;
+    font-family: var(--font-normal);
+    color: var(--text-primary);
+    background: var(--input-bg);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
+    transition: all 0.3s ease;
+}
+
+.input-group input::placeholder {
+    color: #9e9cb2;
+    font-weight: 500;
+}
+
+.input-group input:focus {
+    border-color: #ff8e9e;
+    box-shadow: 0 0 10px rgba(255, 142, 158, 0.2), inset 0 1px 2px rgba(0,0,0,0.02);
+}
+
+/* Button */
+.btn-calculate {
+    background: var(--btn-gradient);
+    color: var(--btn-text);
+    border: none;
+    width: 82%;
+    padding: 16px 30px;
+    border-radius: 50px;
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 400;
+    cursor: pointer;
+    box-shadow: 0 6px 15px rgba(125, 185, 247, 0.3);
+    transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    letter-spacing: 0.5px;
+}
+
+.btn-calculate:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 8px 20px rgba(125, 185, 247, 0.45);
+}
+
+.btn-calculate:active {
+    transform: translateY(1px) scale(0.98);
+}
+
+/* ----------------------------------------------------
+   CHIBI CHARACTERS
+   ---------------------------------------------------- */
+.chibi-character {
+    position: absolute;
+    bottom: -15px;
+    right: -25px;
+    width: 150px;
+    height: 150px;
+    pointer-events: none;
+    z-index: 10;
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.chibi-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+}
+
+/* Specific position and size for normal state chibi */
+.calculator-card .chibi-normal {
+    bottom: -25px;
+    right: -25px;
+    width: 165px;
+    height: 165px;
+}
+
+/* Hide animation for normal character */
+.chibi-normal.hide {
+    opacity: 0;
+    transform: translateY(30px) scale(0.8);
+    pointer-events: none;
+}
+
+/* ----------------------------------------------------
+   RESULTS SECTION
+   ---------------------------------------------------- */
+.results-wrapper {
+    width: 100%;
+    max-height: 0;
+    opacity: 0;
+    transform: translateY(20px);
+    overflow: hidden;
+    transition: max-height 0.8s cubic-bezier(0.19, 1, 0.22, 1), 
+                opacity 0.8s ease, 
+                transform 0.8s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.results-wrapper.show {
+    max-height: 1000px;
+    opacity: 1;
+    transform: translateY(0);
+    overflow: visible; /* Let chibi overflow */
+}
+
+/* Xám mờ bán trong suốt (translucent card) */
+.results-container {
+    background: rgba(226, 226, 232, 0.72);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 28px;
+    padding: 30px 25px 35px 25px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Card kết quả chính màu trắng */
+.main-result-card {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 24px 28px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.03);
+    text-align: left;
+}
+
+.result-main-score {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 0 18px 0;
+    border-bottom: 1.5px dashed #f0edf8;
+    text-align: center;
+}
+
+.main-score-label {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #647687;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+}
+
+.main-score-value {
+    font-family: var(--font-rounded);
+    font-size: 3.6rem;
+    font-weight: 800;
+    color: var(--text-secondary);
+    text-shadow: 0 4px 10px rgba(255, 62, 108, 0.15);
+    line-height: 1;
+}
+
+.letter-message {
+    margin-top: 15px;
+    font-size: 0.98rem;
+    line-height: 1.5;
+    font-style: italic;
+    color: #ff3e6c;
+    background: #fff5f7;
+    padding: 12px 16px;
+    border-radius: 12px;
+    border-left: 3px solid #ff3e6c;
+}
+
+/* Hàng chứa hai card phụ phía dưới */
+.sub-results-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.sub-card {
+    border-radius: 18px;
+    padding: 18px 15px;
+    text-align: center;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.02);
+}
+
+.sub-card-title {
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+    color: #647687;
+}
+
+.sub-card-value {
+    font-family: var(--font-rounded);
+    font-size: 1.65rem;
+    font-weight: 800;
+    margin-bottom: 3px;
+}
+
+.sub-card-desc {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #7d8e9e;
+}
+
+/* Styling màu riêng cho từng card phụ */
+.card-peach {
+    background: #ffd2c4;
+    color: #a0442c;
+}
+.card-peach .sub-card-value { color: #d35400; }
+.card-peach .sub-card-desc { color: #b85e48; }
+
+.card-purple {
+    background: linear-gradient(135deg, #e3dcfa 0%, #d5dbfc 100%);
+    color: #4b4b88;
+}
+.card-purple .sub-card-value { color: #5b53ac; }
+.card-purple .sub-card-desc { color: #7272ac; }
+
+/* Cô bé thumbsup ở kết quả */
+.results-container .chibi-result {
+    bottom: -35px;
+    right: -25px;
+    width: 175px;
+    height: 175px;
+    opacity: 0;
+    transform: translateY(30px) scale(0.8);
+}
+
+.results-wrapper.show .chibi-result {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    transition-delay: 0.3s; /* Hiện trễ hơn kết quả 1 chút */
+}
+
+/* ----------------------------------------------------
+   FOOTER STYLING
+   ---------------------------------------------------- */
+.footer {
+    position: absolute;
+    bottom: 25px;
+    width: 100%;
+    text-align: center;
+    z-index: 5;
+    pointer-events: none;
+}
+
+.footer p {
+    font-size: 0.95rem;
+    color: #7d8c9a;
+    font-weight: 600;
+}
+
+/* ----------------------------------------------------
+   RESPONSIVE DESIGN
+   ---------------------------------------------------- */
+@media (max-width: 580px) {
+    .app-container {
+        padding: 25px 15px 120px 15px;
+    }
+    
+    .club-title {
+        font-size: 1.35rem;
+    }
+    
+    .page-title {
+        font-size: 1.9rem;
+    }
+    
+    .calculator-card {
+        padding: 25px 20px 30px 20px;
+    }
+    
+    .btn-calculate {
+        width: 100%;
+    }
+    
+    /* Thu nhỏ và chỉnh vị trí chibi trên điện thoại để không bị che khuất */
+    .calculator-card .chibi-normal {
+        width: 120px;
+        height: 120px;
+        bottom: -20px;
+        right: -10px;
+    }
+    
+    .results-container {
+        padding: 20px 15px 25px 15px;
+    }
+    
+    .results-container .chibi-result {
+        width: 130px;
+        height: 130px;
+        bottom: -25px;
+        right: -10px;
+    }
+    
+    .main-result-card {
+        padding: 16px 18px;
+    }
+    
+    .sub-results-row {
+        gap: 10px;
+    }
+    
+    .sub-card {
+        padding: 14px 10px;
+    }
+    
+    .sub-card-value {
+        font-size: 1.35rem;
+    }
+}
+
+@media (max-width: 380px) {
+    .sub-results-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .calculator-card .chibi-normal,
+    .results-container .chibi-result {
+        display: none; /* Ẩn nhân vật ở màn hình quá nhỏ để nhường chỗ hiển thị */
+    }
+}

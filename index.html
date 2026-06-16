@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tính Điểm Hệ 4 - CLB Tình Nguyện Trường Y</title>
+    <!-- Thêm font chữ Fredoka và Quicksand từ Google Fonts cho phong cách dễ thương -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Paytone+One&family=Quicksand:wght@400;500;600;700&family=Tapestry&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Container chính để quản lý nền và các hạt lơ lửng -->
+    <div class="app-container">
+        <!-- Các hạt bong bóng bay lơ lửng trong nền -->
+        <div class="bg-bubbles" id="bg-bubbles"></div>
+        
+        <!-- Các phần tử trang trí (bướm, sao) lơ lửng trong nền -->
+        <div class="decorations">
+            <!-- Bướm vàng bay lơ lửng -->
+            <div class="butterfly b1">
+                <svg viewBox="0 0 50 50" width="100%" height="100%">
+                    <path fill="#FFE59E" d="M25,20 C22,12 15,10 12,14 C9,18 11,25 25,28 C39,25 41,18 38,14 C35,10 28,12 25,20 Z" />
+                    <path fill="#FFD56B" d="M25,20 C23,24 16,28 14,26 C12,24 14,18 25,20 C36,18 38,24 36,26 C34,28 27,24 25,20 Z" opacity="0.8" />
+                </svg>
+            </div>
+            <div class="butterfly b2">
+                <svg viewBox="0 0 50 50" width="100%" height="100%">
+                    <path fill="#FFE59E" d="M25,20 C22,12 15,10 12,14 C9,18 11,25 25,28 C39,25 41,18 38,14 C35,10 28,12 25,20 Z" />
+                    <path fill="#FFD56B" d="M25,20 C23,24 16,28 14,26 C12,24 14,18 25,20 C36,18 38,24 36,26 C34,28 27,24 25,20 Z" opacity="0.8" />
+                </svg>
+            </div>
+            <div class="butterfly b3">
+                <svg viewBox="0 0 50 50" width="100%" height="100%">
+                    <path fill="#FFE59E" d="M25,20 C22,12 15,10 12,14 C9,18 11,25 25,28 C39,25 41,18 38,14 C35,10 28,12 25,20 Z" />
+                </svg>
+            </div>
+
+            <!-- Ngôi sao lung linh -->
+            <div class="star s1">★</div>
+            <div class="star s2">★</div>
+            <div class="star s3">★</div>
+            <div class="star s4">★</div>
+        </div>
+
+        <!-- Layout nội dung chính -->
+        <main class="content-wrapper">
+            <!-- Header của trang -->
+            <header class="header">
+                <div class="logo-wrapper">
+                    <!-- Logo CLB có viền đỏ nổi bật như hình vẽ -->
+                    <img src="assets/logo.png" alt="Logo CLB" class="club-logo" id="club-logo-img">
+                    <!-- Fallback logo bằng SVG nếu chưa có logo.png thực tế hoặc lỗi tải -->
+                    <div id="logo-fallback" class="logo-fallback">
+                        <svg viewBox="0 0 100 100" width="100%" height="100%">
+                            <circle cx="50" cy="50" r="46" fill="#FFF" stroke="#FF3E6C" stroke-width="4"/>
+                            <circle cx="50" cy="50" r="41" fill="#3A86C8" opacity="0.1"/>
+                            <path d="M50 30 C45 20 30 20 30 35 C30 50 50 65 50 70 C50 65 70 50 70 35 C70 20 55 20 50 30 Z" fill="#FF3E6C"/>
+                            <path d="M36 45 Q50 35 64 45" fill="none" stroke="#2563EB" stroke-width="4" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="title-group">
+                    <h2 class="club-subtitle">CÂU LẠC BỘ</h2>
+                    <h1 class="club-title">TÌNH NGUYỆN TRƯỜNG Y</h1>
+                    <h1 class="page-title">TÍNH ĐIỂM HỆ 4</h1>
+                </div>
+            </header>
+
+            <!-- Card tính điểm chính -->
+            <section class="calculator-card">
+                <p class="card-prompt">Hôm nay bạn thi ổn hong?</p>
+                
+                <div class="inputs-wrapper">
+                    <div class="input-group">
+                        <input type="number" id="correct-answers" placeholder="Nhập số câu đúng" min="0" step="any" required>
+                    </div>
+                    <div class="input-group">
+                        <input type="number" id="total-questions" placeholder="Nhập tổng số câu" min="1" step="any" required>
+                    </div>
+                </div>
+
+                <button id="btn-calculate" class="btn-calculate">TÍNH ĐIỂM</button>
+
+                <!-- Cô bé chibi dễ thương 1 (Chờ tính điểm - tay đặt lên má) -->
+                <div class="chibi-character chibi-normal" id="chibi-normal">
+                    <img src="assets/girl_smile.png" alt="Cô bé cười" class="chibi-img" id="chibi-normal-img">
+                </div>
+            </section>
+
+            <!-- Khu vực kết quả (ẩn/hiển thị trượt xuống) -->
+            <section class="results-wrapper" id="results-wrapper">
+                <div class="results-container">
+                    <!-- Card kết quả màu trắng đục ở trên -->
+                    <div class="main-result-card">
+                        <div class="result-main-score">
+                            <span class="main-score-label">ĐIỂM HỆ 4</span>
+                            <strong class="main-score-value" id="res-score4">0.0</strong>
+                        </div>
+                        <div class="letter-message" id="res-message">
+                            💌 Vui lòng nhập số liệu và tính điểm nha!
+                        </div>
+                    </div>
+
+                    <!-- Hai card phụ kết quả phía dưới -->
+                    <div class="sub-results-row">
+                        <!-- Card cam đào pastel hiển thị Điểm Hệ 10 -->
+                        <div class="sub-card card-peach">
+                            <h3 class="sub-card-title">ĐIỂM HỆ 10</h3>
+                            <div class="sub-card-value" id="res-score10">0.00</div>
+                            <div class="sub-card-desc" id="res-ratio-percent">Đúng 0/0 câu (0%)</div>
+                        </div>
+                        
+                        <!-- Card gradient tím hồng pastel hiển thị Điểm Chữ -->
+                        <div class="sub-card card-purple">
+                            <h3 class="sub-card-title">ĐIỂM CHỮ</h3>
+                            <div class="sub-card-value" id="res-letter">-</div>
+                            <div class="sub-card-desc" id="res-grade">Xếp loại: -</div>
+                        </div>
+                    </div>
+
+                    <!-- Cô bé chibi dễ thương 2 (Đã tính điểm - giơ ngón tay cái) -->
+                    <div class="chibi-character chibi-result" id="chibi-result">
+                        <img src="assets/girl_thumbsup.png" alt="Cô bé giơ ngón cái" class="chibi-img" id="chibi-result-img">
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer tác giả bản quyền -->
+        <footer class="footer">
+            <p>© Việt Thanh - Y23C - PRIT</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
