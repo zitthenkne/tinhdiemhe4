@@ -17,8 +17,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const chibiNormal = document.getElementById('chibi-normal');
 
+    // Các phần tử modal hướng dẫn
+    const btnToggleGuide = document.getElementById('btn-toggle-guide');
+    const modalGuide = document.getElementById('modal-guide');
+    const btnCloseModal = document.getElementById('btn-close-modal');
+
     // Sự kiện khi nhấn nút Tính Điểm
     btnCalculate.addEventListener('click', calculateGPA);
+
+    // Sự kiện mở/đóng modal hướng dẫn
+    if (btnToggleGuide && modalGuide && btnCloseModal) {
+        btnToggleGuide.addEventListener('click', () => {
+            modalGuide.classList.add('active');
+        });
+
+        btnCloseModal.addEventListener('click', () => {
+            modalGuide.classList.remove('active');
+        });
+
+        modalGuide.addEventListener('click', (e) => {
+            if (e.target === modalGuide) {
+                modalGuide.classList.remove('active');
+            }
+        });
+    }
 
     // Cho phép nhấn Enter trong ô nhập để tính điểm nhanh
     correctInput.addEventListener('keypress', (e) => {
@@ -58,6 +80,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /**
      * Hàm chính tính toán điểm hệ 10, hệ 4 và quy đổi xếp loại
+     * Chuẩn công thức UMP 3 đoạn:
+     * - x < 0.5y        : Điểm = 8 * (x / y)
+     * - 0.5y <= x < 0.6y: Điểm = 4.0 + 10 * ((x - 0.5y) / y)
+     * - x >= 0.6y       : Điểm = 5.0 + 12.5 * ((x - 0.6y) / y)
      */
     function calculateGPA() {
         // Lấy giá trị đầu vào
@@ -89,26 +115,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 3. Tính điểm hệ 10 theo công thức phi tuyến tính chuẩn UMP
         let score10 = 0;
-        const n = x / y; // Tỷ lệ câu trả lời đúng
+        const halfY = 0.5 * y;
+        const pointSixY = 0.6 * y;
 
-        if (n < 0.5) {
+        if (x < halfY) {
             score10 = (8 * x) / y;
-        } else if (Math.abs(n - 0.5) < 1e-9) { // n === 0.5
-            score10 = 4.0;
-        } else if (n > 0.5 && n < 0.6) {
-            score10 = 4.0 + (10 * (x - 0.5 * y)) / y;
-        } else if (Math.abs(n - 0.6) < 1e-9) { // n === 0.6
-            score10 = 5.0;
-        } else { // n > 0.6
-            score10 = 5.0 + (12.5 * (x - 0.6 * y)) / y;
+        } else if (x < pointSixY) {
+            score10 = 4.0 + (10 * (x - halfY)) / y;
+        } else {
+            score10 = 5.0 + (12.5 * (x - pointSixY)) / y;
         }
 
         // Làm tròn điểm hệ 10 đến 2 chữ số thập phân
         score10 = Math.round((score10 + Number.EPSILON) * 100) / 100;
-        // Đảm bảo điểm nằm trong khoảng [0, 10] do sai số làm tròn số thực
         score10 = Math.max(0, Math.min(10, score10));
 
-        // 4. Quy đổi sang hệ 4, điểm chữ, xếp loại và lấy lời nhắn tương ứng
+        // 4. Quy đổi sang hệ 4, điểm chữ, xếp loại và lấy lời nhắn tương ứng chuẩn Bảng quy đổi UMP
         let score4 = 0.0;
         let letterGrade = 'F';
         let classification = 'Kém (Không đạt)';
@@ -122,7 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (score10 >= 8.5) {
             score4 = 4.0;
             letterGrade = 'A';
-            classification = 'Giỏi';
+            classification = 'Giỏi (Mốc 4.0 Hệ 4)';
             message = "Dỏi cá àaaaaa, tuyệt vời lắm gút chóp em 🎉";
         } else if (score10 >= 8.0) {
             score4 = 3.5;
@@ -134,21 +156,26 @@ document.addEventListener('DOMContentLoaded', () => {
             letterGrade = 'B';
             classification = 'Khá';
             message = "Ôi chu choa, cũng lằng tà lằng nhằng phết í 👍";
+        } else if (score10 >= 6.5) {
+            score4 = 2.5;
+            letterGrade = 'C+';
+            classification = 'Trung bình khá';
+            message = "Cũng khá ổn áp nè, cố gắng thêm xíu nữa là lên B rồi! ✨";
         } else if (score10 >= 5.5) {
             score4 = 2.0;
             letterGrade = 'C';
             classification = 'Trung bình';
-            message = "Bạn đã qua môn! Đây là một cột mốc quan trọng. Hãy coi đây là động lực để tập trung và bứt phá hơn trong tương lai. 💪";
+            message = "Bạn đã qua môn! Đây là một cột mốc quan trọng. Hãy coi đây là động lực để bứt phá hơn nha. 💪";
         } else if (score10 >= 5.0) {
             score4 = 1.5;
             letterGrade = 'D+';
             classification = 'Trung bình yếu';
-            message = "Suýt soát rồi, nhưng vẫn qua môn! Môn học này có vẻ khá thử thách. Đừng ngần ngại tìm kiếm sự giúp đỡ từ bạn bè hoặc các anh chị nhé. 📚";
+            message = "Suýt soát rồi, nhưng vẫn qua môn! Cố gắng ôn tập kỹ hơn ở các môn sau nha. 📚";
         } else if (score10 >= 4.0) {
             score4 = 1.0;
             letterGrade = 'D';
-            classification = 'Yếu';
-            message = "Suýt soát rồi, nhưng vẫn qua môn! Môn học này có vẻ khá thử thách. Đừng ngần ngại tìm kiếm sự giúp đỡ từ bạn bè hoặc các anh chị nhé. 📚";
+            classification = 'Yếu (Chạm sàn qua môn)';
+            message = "Chạm sàn qua môn trong gang tấc! Lần sau phải cẩn thận hơn nữa đó nè. 🍀";
         } else { // < 4.0
             score4 = 0.0;
             letterGrade = 'F';
@@ -168,7 +195,7 @@ document.addEventListener('DOMContentLoaded', () => {
         resMessage.style.background = '#fff5f7';
 
         // Cập nhật 2 card phụ phía dưới
-        const percent = (n * 100).toFixed(1);
+        const percent = ((x / y) * 100).toFixed(1);
         resRatioPercent.textContent = `Đúng ${x}/${y} câu (${percent}%)`;
         resGrade.textContent = `Xếp loại: ${classification}`;
 

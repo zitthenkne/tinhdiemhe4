@@ -367,6 +367,33 @@ body {
     transform: translateY(1px) scale(0.98);
 }
 
+.btn-guide {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 14px;
+    background: rgba(255, 255, 255, 0.7);
+    color: #4b6584;
+    border: 1.5px solid #dcdde1;
+    padding: 10px 22px;
+    border-radius: 50px;
+    font-family: var(--font-normal);
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.btn-guide:hover {
+    background: #ffffff;
+    color: #2f3640;
+    border-color: #ff8e9e;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(255, 142, 158, 0.2);
+}
+
+
 /* ----------------------------------------------------
    CHIBI CHARACTERS
    ---------------------------------------------------- */
@@ -554,6 +581,236 @@ body {
 }
 
 /* ----------------------------------------------------
+   GUIDE MODAL STYLES
+   ---------------------------------------------------- */
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(18, 30, 49, 0.55);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.modal-backdrop.active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.modal-dialog {
+    background: #ffffff;
+    border-radius: 24px;
+    width: 100%;
+    max-width: 620px;
+    max-height: 88vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
+    transform: scale(0.9) translateY(20px);
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.modal-backdrop.active .modal-dialog {
+    transform: scale(1) translateY(0);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 24px;
+    background: linear-gradient(135deg, #fff5f7 0%, #f7f3ff 100%);
+    border-bottom: 1.5px solid #f0edf8;
+}
+
+.modal-title {
+    font-family: var(--font-normal);
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.2px;
+}
+
+.btn-close-modal {
+    background: none;
+    border: none;
+    font-size: 1.8rem;
+    color: #8395a7;
+    cursor: pointer;
+    line-height: 1;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.btn-close-modal:hover {
+    background: #fee7eb;
+    color: #ff3e6c;
+}
+
+.modal-body {
+    padding: 22px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    font-family: var(--font-normal);
+}
+
+.guide-section {
+    background: #fafafa;
+    border-radius: 16px;
+    padding: 18px 20px;
+    border: 1px solid #f1f2f6;
+}
+
+.guide-heading {
+    font-family: var(--font-normal);
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 4px;
+    letter-spacing: 0.2px;
+}
+
+.guide-subtext {
+    font-size: 0.88rem;
+    color: #7f8c8d;
+    margin-bottom: 12px;
+}
+
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    margin-bottom: 14px;
+    border-radius: 12px;
+    border: 1px solid #e1e8ed;
+}
+
+.guide-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+    text-align: left;
+}
+
+.guide-table th {
+    background: #f1f5f9;
+    padding: 10px 14px;
+    font-weight: 700;
+    color: #334155;
+    border-bottom: 1.5px solid #cbd5e1;
+}
+
+.guide-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid #e2e8f0;
+    color: #334155;
+}
+
+.guide-table tr:last-child td {
+    border-bottom: none;
+}
+
+.guide-table code {
+    background: #edf2f7;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-family: monospace;
+    font-size: 0.88rem;
+    color: #0c2461;
+}
+
+.row-red { background: #fff1f2; }
+.row-yellow { background: #fefce8; }
+.row-green { background: #f0fdf4; }
+
+.row-highlight {
+    background: #fff9db !important;
+    border-left: 4px solid #f59f00;
+}
+
+.highlight-gpa {
+    color: #d9480f;
+    font-size: 1.05rem;
+}
+
+.badge-grade {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-weight: 800;
+    font-size: 0.82rem;
+    text-align: center;
+}
+
+.grade-aplus { background: #dcfce7; color: #15803d; }
+.grade-a { background: #fef3c7; color: #b45309; }
+.grade-bplus { background: #e0e7ff; color: #4338ca; }
+.grade-b { background: #e0f2fe; color: #0369a1; }
+.grade-cplus { background: #ede9fe; color: #6d28d9; }
+.grade-c { background: #f3e8ff; color: #7e22ce; }
+.grade-dplus { background: #ffedd5; color: #c2410c; }
+.grade-d { background: #fee2e2; color: #b91c1c; }
+.grade-f { background: #f1f5f9; color: #64748b; }
+
+.guide-examples {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.example-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    background: #ffffff;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    font-size: 0.88rem;
+}
+
+.ex-badge {
+    background: #ff7675;
+    color: #ffffff;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.ex-2 .ex-badge { background: #fdcb6e; color: #2d3436; }
+.ex-3 .ex-badge { background: #00b894; }
+
+.guide-note {
+    background: #fff8e1;
+    border-left: 4px solid #ffb300;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    color: #795548;
+    line-height: 1.5;
+}
+
+/* ----------------------------------------------------
    FOOTER STYLING
    ---------------------------------------------------- */
 .footer {
@@ -594,6 +851,12 @@ body {
     .btn-calculate {
         width: 100%;
     }
+
+    .btn-guide {
+        width: 100%;
+        font-size: 0.9rem;
+        padding: 10px 16px;
+    }
     
     /* Thu nhỏ và chỉnh vị trí chibi trên điện thoại để không bị che khuất */
     .calculator-card .chibi-normal {
@@ -629,6 +892,37 @@ body {
     .sub-card-value {
         font-size: 1.35rem;
     }
+
+    .modal-backdrop {
+        padding: 12px;
+    }
+
+    .modal-dialog {
+        max-height: 94vh;
+        border-radius: 18px;
+    }
+
+    .modal-header {
+        padding: 14px 18px;
+    }
+
+    .modal-title {
+        font-size: 1.05rem;
+    }
+
+    .modal-body {
+        padding: 15px;
+        gap: 15px;
+    }
+
+    .guide-section {
+        padding: 14px 12px;
+    }
+
+    .guide-table th, .guide-table td {
+        padding: 8px 10px;
+        font-size: 0.85rem;
+    }
 }
 
 @media (max-width: 380px) {
@@ -641,3 +935,4 @@ body {
         display: none; /* Ẩn nhân vật ở màn hình quá nhỏ để nhường chỗ hiển thị */
     }
 }
+

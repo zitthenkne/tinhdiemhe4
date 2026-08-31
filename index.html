@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tính Điểm Hệ 4 - CLB Tình Nguyện Trường Y</title>
-    <!-- Thêm font chữ Fredoka và Quicksand từ Google Fonts cho phong cách dễ thương -->
+    <!-- Font chữ Fredoka, Paytone One, Quicksand và Tapestry do bạn đã lựa chọn -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Paytone+One&family=Quicksand:wght@400;500;600;700&family=Tapestry&display=swap" rel="stylesheet">
@@ -82,6 +82,7 @@
                 </div>
 
                 <button id="btn-calculate" class="btn-calculate">TÍNH ĐIỂM</button>
+                <button type="button" id="btn-toggle-guide" class="btn-guide">📋 Xem công thức & Bảng quy đổi</button>
 
                 <!-- Cô bé chibi dễ thương 1 (Chờ tính điểm - tay đặt lên má) -->
                 <div class="chibi-character chibi-normal" id="chibi-normal">
@@ -127,6 +128,142 @@
                 </div>
             </section>
         </main>
+
+        <!-- Modal hiển thị công thức và bảng quy đổi -->
+        <div class="modal-backdrop" id="modal-guide">
+            <div class="modal-dialog">
+                <div class="modal-header">
+                    <h3 class="modal-title">📐 Bảng Tra Cứu Công Thức & Quy Đổi Điểm</h3>
+                    <button class="btn-close-modal" id="btn-close-modal" aria-label="Đóng">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <!-- Khối công thức hệ 10 -->
+                    <div class="guide-section">
+                        <h4 class="guide-heading">✨ CÔNG THỨC TÍNH ĐIỂM HỆ 10</h4>
+                        <p class="guide-subtext">(<strong>x</strong>: Số câu đúng | <strong>y</strong>: Tổng số câu thi)</p>
+                        
+                        <div class="table-responsive">
+                            <table class="guide-table formula-table">
+                                <thead>
+                                    <tr>
+                                        <th>Điều kiện (Số câu đúng)</th>
+                                        <th>Công thức Điểm Hệ 10</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="row-red">
+                                        <td><strong>x &lt; 0.5y</strong></td>
+                                        <td><code>Điểm = 8 × (x / y)</code></td>
+                                    </tr>
+                                    <tr class="row-yellow">
+                                        <td><strong>0.5y ≤ x &lt; 0.6y</strong></td>
+                                        <td><code>Điểm = 4.0 + 10 × [(x - 0.5y) / y]</code></td>
+                                    </tr>
+                                    <tr class="row-green">
+                                        <td><strong>x ≥ 0.6y</strong></td>
+                                        <td><code>Điểm = 5.0 + 12.5 × [(x - 0.6y) / y]</code></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Các ví dụ minh họa -->
+                        <div class="guide-examples">
+                            <div class="example-item ex-1">
+                                <span class="ex-badge">Ví dụ 1</span>
+                                <span class="ex-content"><strong>40/100 câu</strong> ➔ <strong>3.2 điểm</strong> (Điểm F)</span>
+                            </div>
+                            <div class="example-item ex-2">
+                                <span class="ex-badge">Ví dụ 2</span>
+                                <span class="ex-content"><strong>55/100 câu</strong> ➔ <strong>4.5 điểm</strong> (Điểm D)</span>
+                            </div>
+                            <div class="example-item ex-3">
+                                <span class="ex-badge">Ví dụ 3</span>
+                                <span class="ex-content"><strong>80/100 câu</strong> ➔ <strong>7.5 điểm</strong> (Điểm B)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Khối bảng quy đổi điểm chữ & hệ 4 -->
+                    <div class="guide-section">
+                        <h4 class="guide-heading">📊 BẢNG QUY ĐỔI ĐIỂM CHỮ & HỆ 4</h4>
+                        
+                        <div class="table-responsive">
+                            <table class="guide-table conversion-table">
+                                <thead>
+                                    <tr>
+                                        <th>Điểm Hệ 10</th>
+                                        <th>Điểm chữ</th>
+                                        <th>Hệ 4</th>
+                                        <th>Xếp loại</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>≥ 9.5</strong></td>
+                                        <td><span class="badge-grade grade-aplus">A+</span></td>
+                                        <td><strong>4.0</strong></td>
+                                        <td>Xuất sắc</td>
+                                    </tr>
+                                    <tr class="row-highlight">
+                                        <td><strong>8.5 – 9.4</strong></td>
+                                        <td><span class="badge-grade grade-a">A</span></td>
+                                        <td><strong class="highlight-gpa">4.0</strong></td>
+                                        <td><strong>Giỏi</strong> (Mốc 4.0 Hệ 4) ✨</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>8.0 – 8.4</strong></td>
+                                        <td><span class="badge-grade grade-bplus">B+</span></td>
+                                        <td><strong>3.5</strong></td>
+                                        <td>Khá giỏi</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>7.0 – 7.9</strong></td>
+                                        <td><span class="badge-grade grade-b">B</span></td>
+                                        <td><strong>3.0</strong></td>
+                                        <td>Khá</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>6.5 – 6.9</strong></td>
+                                        <td><span class="badge-grade grade-cplus">C+</span></td>
+                                        <td><strong>2.5</strong></td>
+                                        <td>Trung bình khá</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>5.5 – 6.4</strong></td>
+                                        <td><span class="badge-grade grade-c">C</span></td>
+                                        <td><strong>2.0</strong></td>
+                                        <td>Trung bình</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>5.0 – 5.4</strong></td>
+                                        <td><span class="badge-grade grade-dplus">D+</span></td>
+                                        <td><strong>1.5</strong></td>
+                                        <td>Trung bình yếu</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>4.0 – 4.9</strong></td>
+                                        <td><span class="badge-grade grade-d">D</span></td>
+                                        <td><strong>1.0</strong></td>
+                                        <td>Yếu (Chạm sàn qua môn)</td>
+                                    </tr>
+                                    <tr class="row-f">
+                                        <td><strong>&lt; 4.0</strong></td>
+                                        <td><span class="badge-grade grade-f">F</span></td>
+                                        <td><strong>0.0</strong></td>
+                                        <td>Kém (Không đạt)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="guide-note">
+                            📌 <strong>Lưu ý:</strong> Đạt từ <strong>8.5 điểm hệ 10 trở lên</strong> để chạm mốc <strong>4.0 Hệ 4 (Điểm A)</strong>.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- Footer tác giả bản quyền -->
         <footer class="footer">
