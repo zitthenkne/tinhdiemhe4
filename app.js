@@ -496,7 +496,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /* ====================================================
-   PWA - CÀI APP VỀ ĐIỆN THOẠI
+   PWA - CÀI APP VỀ ĐIỆN THOẠI + DÙNG OFFLINE
    ==================================================== */
 (function initInstallApp() {
     // Đăng ký service worker (bắt buộc để cài được + chạy offline)
@@ -507,9 +507,32 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const btnInstall = document.getElementById('btn-install');
+    const toast = document.getElementById('install-toast');
+    const btnCloseToast = document.getElementById('install-toast-close');
     if (!btnInstall) return;
 
-    // Đang mở dạng app rồi thì khỏi hiện nút
+    const DISMISS_KEY = 'tinhdiem4-an-nhac-cai-app';
+
+    function daTat() {
+        try { return localStorage.getItem(DISMISS_KEY) === '1'; } catch (e) { return false; }
+    }
+    function ghiNhoDaTat() {
+        try { localStorage.setItem(DISMISS_KEY, '1'); } catch (e) {}
+    }
+    function anToast() {
+        if (toast) toast.hidden = true;
+    }
+    function hienNutVaToast() {
+        btnInstall.hidden = false;
+        if (toast && !daTat()) toast.hidden = false;
+    }
+    // Đã cài xong hoặc đang mở dạng app -> giấu hết, không nhắc nữa
+    function daCaiXong() {
+        btnInstall.hidden = true;
+        anToast();
+    }
+
+    // Đang mở dạng app rồi thì khỏi hiện gì cả
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches
         || window.navigator.standalone === true;
     if (isStandalone) return;
@@ -521,13 +544,14 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('beforeinstallprompt', function (e) {
         e.preventDefault();
         deferredPrompt = e;
-        btnInstall.hidden = false;
+        hienNutVaToast();
     });
 
-    // iOS không có beforeinstallprompt -> luôn hiện nút để chỉ cách cài
-    if (isIOS) btnInstall.hidden = false;
+    // iOS không có beforeinstallprompt -> luôn hiện để chỉ cách cài thủ công
+    if (isIOS) hienNutVaToast();
 
     btnInstall.addEventListener('click', function () {
+        anToast();
         if (deferredPrompt) {
             deferredPrompt.prompt();
             deferredPrompt.userChoice.finally(function () {
@@ -539,7 +563,26 @@ document.addEventListener('DOMContentLoaded', () => {
         alert('Cách cài trên iPhone/iPad:\n1. Mở trang này bằng Safari\n2. Bấm nút Chia sẻ ở thanh dưới\n3. Chọn "Thêm vào MH chính" (Add to Home Screen)');
     });
 
-    window.addEventListener('appinstalled', function () {
-        btnInstall.hidden = true;
+    // Bấm vào thông báo cũng cài luôn cho nhanh
+    if (toast) {
+        toast.addEventListener('click', function (e) {
+            if (e.target === btnCloseToast) return;
+            btnInstall.click();
+        });
+    }
+
+    // Bấm dấu X: tắt hẳn, lần sau vào không nhắc nữa
+    if (btnCloseToast) {
+        btnCloseToast.addEventListener('click', function (e) {
+            e.stopPropagation();
+            anToast();
+            ghiNhoDaTat();
+        });
+    }
+
+    // Cài xong -> gỡ cả nút lẫn thông báo
+    window.addEventListener('appinstalled', daCaiXong);
+    window.matchMedia('(display-mode: standalone)').addEventListener('change', function (e) {
+        if (e.matches) daCaiXong();
     });
 })();
