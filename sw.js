@@ -1,9 +1,16 @@
 /* ====================================================
    SERVICE WORKER - cài app về máy + dùng được khi offline
-   Đổi CACHE_NAME (v1 -> v2...) khi muốn xoá sạch cache cũ.
+
+   Nguyên tắc chia 2 loại cho khỏi lẫn lộn bản cũ/bản mới:
+   - Code (html/css/js/manifest): LUÔN lấy từ mạng. Rớt mạng mới lấy cache.
+     Không đặt timeout, vì timeout chính là thứ gây ra cảnh
+     "lúc bản cũ lúc bản mới".
+   - Ảnh + thư viện ngoài (font, icon, QR): lấy cache trước cho nhanh,
+     nền tự tải bản mới. Mấy file này gần như không đổi.
+
+   Sửa code xong nhớ đổi CACHE_NAME (v3 -> v4...) để máy user xoá cache cũ.
    ==================================================== */
-const CACHE_NAME = 'tinhdiemhe4-v2';
-const TIMEOUT_MS = 4500;
+const CACHE_NAME = 'tinhdiemhe4-v3';
 
 // File của mình: luôn tải sẵn để offline vẫn mở được
 const SHELL = [
@@ -25,16 +32,19 @@ const CDN = [
     'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js'
 ];
 
+const LA_ANH = /\.(png|jpe?g|svg|webp|gif|ico|woff2?)$/i;
+
 self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) =>
-            cache.addAll(SHELL).then(() =>
-                Promise.all(CDN.map((url) =>
+            // cache: 'reload' để lấy bản mới tinh từ server,
+            // không xài lại bản cũ trong HTTP cache của trình duyệt
+            cache.addAll(SHELL.map((u) => new Request(u, { cache: 'reload' })))
+                .then(() => Promise.all(CDN.map((url) =>
                     // dùng fetch + put (không dùng cache.add) vì file ngoài
                     // có thể trả về dạng opaque, cache.add sẽ từ chối
                     fetch(url).then((res) => cache.put(url, res)).catch(() => {})
-                ))
-            )
+                )))
         ).then(() => self.skipWaiting())
     );
 });
@@ -55,35 +65,34 @@ function luuVaoCache(req, res) {
     return res;
 }
 
-function quaHan(ms) {
-    return new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), ms));
+// Lấy cache trước, đồng thời tải bản mới về để dành cho lần sau
+function cacheTruoc(req) {
+    return caches.match(req).then((hit) => {
+        const mang = fetch(req).then((res) => luuVaoCache(req, res));
+        mang.catch(() => {});
+        return hit || mang;
+    });
+}
+
+// Luôn hỏi mạng trước; mạng chết mới lấy cache ra dùng
+function mangTruoc(req) {
+    return fetch(req)
+        .then((res) => luuVaoCache(req, res))
+        .catch(() => caches.match(req).then((hit) =>
+            hit || (req.mode === 'navigate' ? caches.match('index.html') : Promise.reject(new Error('offline')))
+        ));
 }
 
 self.addEventListener('fetch', (event) => {
     const req = event.request;
     if (req.method !== 'GET' || !req.url.startsWith('http')) return;
 
-    const laCungNha = new URL(req.url).origin === self.location.origin;
+    const cungNha = new URL(req.url).origin === self.location.origin;
 
-    // File ngoài (font/icon/thư viện): lấy cache trước cho nhanh, nền tự cập nhật
-    if (!laCungNha) {
-        event.respondWith(
-            caches.match(req).then((hit) => {
-                const mang = fetch(req).then((res) => luuVaoCache(req, res));
-                mang.catch(() => {});
-                return hit || mang;
-            })
-        );
+    if (!cungNha || LA_ANH.test(new URL(req.url).pathname)) {
+        event.respondWith(cacheTruoc(req));
         return;
     }
 
-    // File của mình: ưu tiên mạng (luôn thấy bản mới), mạng chậm/rớt thì lấy cache
-    event.respondWith((function () {
-        const mang = fetch(req).then((res) => luuVaoCache(req, res));
-        mang.catch(() => {});
-
-        return Promise.race([mang, quaHan(TIMEOUT_MS)])
-            .catch(() => caches.match(req).then((hit) => hit || mang))
-            .catch(() => caches.match('index.html'));
-    })());
+    event.respondWith(mangTruoc(req));
 });

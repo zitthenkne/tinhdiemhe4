@@ -501,6 +501,17 @@ document.addEventListener('DOMContentLoaded', () => {
 (function initInstallApp() {
     // Đăng ký service worker (bắt buộc để cài được + chạy offline)
     if ('serviceWorker' in navigator) {
+        // Khi deploy bản mới, service worker mới sẽ chiếm quyền.
+        // Lúc đó tự tải lại trang 1 lần để không bị kẹt ở bản cũ.
+        // daCoSW: lần đầu cài thì không reload, tránh chớp trang vô ích.
+        const daCoSW = !!navigator.serviceWorker.controller;
+        let dangTaiLai = false;
+        navigator.serviceWorker.addEventListener('controllerchange', function () {
+            if (!daCoSW || dangTaiLai) return;
+            dangTaiLai = true;
+            location.reload();
+        });
+
         window.addEventListener('load', function () {
             navigator.serviceWorker.register('sw.js').catch(function () {});
         });

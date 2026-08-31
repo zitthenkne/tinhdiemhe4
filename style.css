@@ -28,17 +28,32 @@ body {
     color: var(--text-primary);
     min-height: 100vh;
     overflow-x: hidden;
+    background: #fecfef;
+    position: relative;
+}
+
+/* Nền tách ra thành 1 lớp fixed riêng.
+   Trước đây để background-attachment: fixed ngay trên body -> điện thoại
+   phải vẽ lại ảnh nền mỗi lần cuộn, và ảnh bị co giãn theo chiều cao body
+   khi thanh địa chỉ ẩn/hiện -> giật, phóng to thu nhỏ.
+   Lớp fixed này bám theo khung nhìn, vẽ 1 lần rồi thôi. */
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
     background: #fecfef url('assets/background.svg') no-repeat center top;
     background-size: cover;
-    background-attachment: fixed;
-    position: relative;
+    pointer-events: none;
 }
 
 /* App Container */
 .app-container {
     width: 100%;
     min-height: 100vh;
-    min-height: 100dvh;
+    /* svh chứ không phải dvh: dvh đổi liên tục lúc thanh địa chỉ trượt
+       -> trang bị đẩy lên đẩy xuống. svh giữ nguyên chiều cao. */
+    min-height: 100svh;
     display: flex;
     flex-direction: column;
     justify-content: center;
