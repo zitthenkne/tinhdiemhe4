@@ -25,6 +25,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalGuide = document.getElementById('modal-guide');
     const btnCloseModal = document.getElementById('btn-close-modal');
 
+    // Khởi tạo tính năng chia sẻ (QR + copy link)
+    initShare();
+
     // Sự kiện khi nhấn nút Tính Điểm
     btnCalculate.addEventListener('click', calculateGPA);
 
@@ -52,6 +55,76 @@ document.addEventListener('DOMContentLoaded', () => {
     totalInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') calculateGPA();
     });
+
+    /**
+     * Chia sẻ công cụ: mở modal, vẽ mã QR trỏ về trang này và copy link
+     */
+    function initShare() {
+        const btnShare = document.getElementById('btn-share');
+        const modalShare = document.getElementById('modal-share');
+        const btnCloseShare = document.getElementById('btn-close-share');
+        const btnCopyLink = document.getElementById('btn-copy-link');
+        const btnNativeShare = document.getElementById('btn-native-share');
+        const shareLink = document.getElementById('share-link');
+        const qrBox = document.getElementById('qr-box');
+        if (!btnShare || !modalShare) return;
+
+        // Link sạch (bỏ query/hash) của chính trang đang mở
+        const pageUrl = location.origin + location.pathname;
+        shareLink.value = pageUrl;
+
+        let qrDrawn = false;
+        function drawQR() {
+            if (qrDrawn || typeof QRCode === 'undefined') return;
+            new QRCode(qrBox, {
+                text: pageUrl,
+                width: 190,
+                height: 190,
+                colorDark: '#123c5e',
+                colorLight: '#ffffff',
+                correctLevel: QRCode.CorrectLevel.M
+            });
+            qrDrawn = true;
+        }
+
+        btnShare.addEventListener('click', () => {
+            drawQR();
+            modalShare.classList.add('active');
+        });
+
+        btnCloseShare.addEventListener('click', () => modalShare.classList.remove('active'));
+        modalShare.addEventListener('click', (e) => {
+            if (e.target === modalShare) modalShare.classList.remove('active');
+        });
+
+        btnCopyLink.addEventListener('click', async () => {
+            try {
+                await navigator.clipboard.writeText(pageUrl);
+            } catch (err) {
+                // Trình duyệt cũ / trang không chạy https thì dùng cách chọn văn bản
+                shareLink.select();
+                document.execCommand('copy');
+            }
+            btnCopyLink.textContent = '✓ Đã copy';
+            btnCopyLink.classList.add('copied');
+            setTimeout(() => {
+                btnCopyLink.textContent = 'Copy';
+                btnCopyLink.classList.remove('copied');
+            }, 1800);
+        });
+
+        // Điện thoại có sẵn menu chia sẻ hệ thống thì hiện thêm nút này
+        if (navigator.share) {
+            btnNativeShare.hidden = false;
+            btnNativeShare.addEventListener('click', () => {
+                navigator.share({
+                    title: 'Tính Điểm Hệ 4 - CLB Tình Nguyện Trường Y',
+                    text: 'Công cụ tính điểm hệ 4 siêu nhanh nè!',
+                    url: pageUrl
+                }).catch(() => {});
+            });
+        }
+    }
 
     /**
      * Tạo một bong bóng với kích thước / vị trí / tốc độ ngẫu nhiên
@@ -421,3 +494,52 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 150);
     }
 });
+
+/* ====================================================
+   PWA - CÀI APP VỀ ĐIỆN THOẠI
+   ==================================================== */
+(function initInstallApp() {
+    // Đăng ký service worker (bắt buộc để cài được + chạy offline)
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+            navigator.serviceWorker.register('sw.js').catch(function () {});
+        });
+    }
+
+    const btnInstall = document.getElementById('btn-install');
+    if (!btnInstall) return;
+
+    // Đang mở dạng app rồi thì khỏi hiện nút
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches
+        || window.navigator.standalone === true;
+    if (isStandalone) return;
+
+    const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+    let deferredPrompt = null;
+
+    // Android / Chrome: trình duyệt báo "cài được" thì mới hiện nút
+    window.addEventListener('beforeinstallprompt', function (e) {
+        e.preventDefault();
+        deferredPrompt = e;
+        btnInstall.hidden = false;
+    });
+
+    // iOS không có beforeinstallprompt -> luôn hiện nút để chỉ cách cài
+    if (isIOS) btnInstall.hidden = false;
+
+    btnInstall.addEventListener('click', function () {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.finally(function () {
+                deferredPrompt = null;
+                btnInstall.hidden = true;
+            });
+            return;
+        }
+        alert('Cách cài trên iPhone/iPad:\n1. Mở trang này bằng Safari\n2. Bấm nút Chia sẻ ở thanh dưới\n3. Chọn "Thêm vào MH chính" (Add to Home Screen)');
+    });
+
+    window.addEventListener('appinstalled', function () {
+        btnInstall.hidden = true;
+    });
+})();

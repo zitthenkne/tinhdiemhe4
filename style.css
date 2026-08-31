@@ -160,18 +160,6 @@ body {
 }
 
 /* Keyframe Animations */
-    50%      { transform: scaleX(0.45) rotate(2deg); }
-}
-
-    100% { transform: rotate(12deg); }
-}
-
-    25%  { transform: translate(40px, -28px); }
-    50%  { transform: translate(14px, -55px); }
-    75%  { transform: translate(-32px, -22px); }
-    100% { transform: translate(8px, 6px); }
-}
-
 @keyframes twinkle {
     0%, 100% { transform: scale(0.55) rotate(0deg);   opacity: 0.25; }
     50%      { transform: scale(1.15) rotate(90deg);  opacity: 0.95; }
@@ -211,7 +199,8 @@ body {
 @media (prefers-reduced-motion: reduce) {
     .logo-wrapper::before,
     .sparkle,
-    .bubble {
+    .bubble,
+    .card-sheen {
         animation: none;
     }
 }
@@ -1333,61 +1322,92 @@ body {
 }
 
 /* ====================================================
-   CARD TÍNH ĐIỂM — vật liệu kính kiểu iOS
-   (nền rất trong + blur mạnh + vibrancy + hairline + grain)
+   VẬT LIỆU KÍNH KIỂU iOS (trong hơn + có chiều sâu)
    ==================================================== */
-.calculator-card {
-    /* Lớp nền cực mỏng, để hậu cảnh xuyên qua như material của iOS */
-    background: rgba(255, 255, 255, 0.22);
+.calculator-card,
+.results-container {
+    /* Lớp nền gần như trong suốt, để hậu cảnh xuyên qua như material iOS */
+    background: linear-gradient(160deg,
+                rgba(255, 255, 255, 0.28) 0%,
+                rgba(255, 255, 255, 0.10) 42%,
+                rgba(255, 255, 255, 0.16) 100%);
 
-    /* Vibrancy: blur mạnh + đẩy màu & độ sáng của hậu cảnh */
-    backdrop-filter: blur(42px) saturate(200%) brightness(1.12);
-    -webkit-backdrop-filter: blur(42px) saturate(200%) brightness(1.12);
+    /* Vibrancy: blur rất mạnh + đẩy màu, độ sáng và tương phản của hậu cảnh */
+    backdrop-filter: blur(60px) saturate(220%) brightness(1.15) contrast(1.04);
+    -webkit-backdrop-filter: blur(60px) saturate(220%) brightness(1.15) contrast(1.04);
 
-    border: 0.5px solid rgba(255, 255, 255, 0.45);
+    border: 0.5px solid rgba(255, 255, 255, 0.4);
     border-radius: 34px;
 
-    /* Bóng đổ rộng & nhạt + hairline sáng trên, tối dưới như iOS */
+    /* Bóng rộng & nhạt + hairline sáng trên, mờ dưới như iOS */
     box-shadow:
-        0 32px 64px rgba(120, 60, 90, 0.16),
-        0 8px 24px rgba(120, 60, 90, 0.10),
-        inset 0 1px 0.5px rgba(255, 255, 255, 0.85),
-        inset 0 -1px 0.5px rgba(255, 255, 255, 0.22);
+        0 36px 72px rgba(120, 60, 90, 0.18),
+        0 10px 26px rgba(120, 60, 90, 0.10),
+        inset 0 1px 0.5px rgba(255, 255, 255, 0.9),
+        inset 0 -1px 0.5px rgba(255, 255, 255, 0.25);
     isolation: isolate;
+    overflow: visible;
 }
 
-/* Lớp hạt mịn (grain) — thứ làm kính iOS trông "có vật liệu" chứ không phẳng lì */
-.calculator-card::before {
+/* Lớp hạt mịn (grain) - thứ làm kính iOS trông có vật liệu chứ không phẳng lì */
+.calculator-card::before,
+.results-container::before {
     inset: 0;
     height: auto;
-    opacity: 0.5;
+    opacity: 0.55;
     mix-blend-mode: overlay;
     background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.35) 0%,
-                                rgba(255, 255, 255, 0.06) 22%,
-                                rgba(255, 255, 255, 0) 45%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.4) 0%,
+                                rgba(255, 255, 255, 0.06) 20%,
+                                rgba(255, 255, 255, 0) 42%),
         url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
     background-size: auto, 140px 140px;
 }
 
-/* Hairline sáng ôm mép trên — vệt phản chiếu đặc trưng của iOS */
-.calculator-card::after {
+/* Viền hairline phát sáng ôm quanh mép kính */
+.calculator-card::after,
+.results-container::after {
     content: "";
     position: absolute;
     inset: 0;
     border-radius: inherit;
     padding: 1px;
-    background: linear-gradient(160deg,
-                rgba(255, 255, 255, 0.9) 0%,
-                rgba(255, 255, 255, 0.25) 30%,
-                rgba(255, 255, 255, 0) 55%,
-                rgba(255, 255, 255, 0.35) 100%);
+    background: linear-gradient(150deg,
+                rgba(255, 255, 255, 0.95) 0%,
+                rgba(255, 214, 232, 0.55) 24%,
+                rgba(255, 255, 255, 0.05) 50%,
+                rgba(200, 228, 255, 0.55) 76%,
+                rgba(255, 255, 255, 0.85) 100%);
     -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
             mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
     -webkit-mask-composite: xor;
             mask-composite: exclude;
     pointer-events: none;
     z-index: 0;
+}
+
+/* Dải sáng lướt chậm ngang mặt kính */
+.calculator-card > .card-sheen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 45%;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(100deg,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.45) 50%,
+                rgba(255, 255, 255, 0) 100%);
+    filter: blur(6px);
+    pointer-events: none;
+    z-index: 0;
+    animation: sheen-sweep 9s ease-in-out infinite;
+}
+
+@keyframes sheen-sweep {
+    0%, 65%, 100% { transform: translateX(-160%) skewX(-16deg); opacity: 0; }
+    72%           { opacity: 0.9; }
+    99%           { transform: translateX(320%) skewX(-16deg); opacity: 0; }
 }
 
 /* Chữ trên material mỏng cần đậm hơn để đủ tương phản (kiểu label iOS) */
@@ -1398,9 +1418,21 @@ body {
     text-shadow: 0 1px 3px rgba(255, 255, 255, 0.9);
 }
 
-/* Ô nhập & nút phụ cũng dùng cùng vật liệu cho đồng bộ */
-.input-group input {
+/* Card kết quả bên trong cũng mỏng lại cho ăn nhập */
+.main-result-card {
     background: rgba(255, 255, 255, 0.42);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    border: 0.5px solid rgba(255, 255, 255, 0.6);
+}
+
+.sub-card {
+    border: 0.5px solid rgba(255, 255, 255, 0.5);
+}
+
+/* Ô nhập và nút phụ dùng cùng vật liệu */
+.input-group input {
+    background: rgba(255, 255, 255, 0.35);
     backdrop-filter: blur(20px) saturate(180%);
     -webkit-backdrop-filter: blur(20px) saturate(180%);
     border: 0.5px solid rgba(255, 255, 255, 0.6);
@@ -1409,8 +1441,10 @@ body {
         0 2px 10px rgba(120, 60, 90, 0.06);
 }
 
+.input-group input::placeholder { color: #8891a8; }
+
 .btn-guide {
-    background: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.28);
     backdrop-filter: blur(20px) saturate(180%);
     -webkit-backdrop-filter: blur(20px) saturate(180%);
     border: 0.5px solid rgba(255, 255, 255, 0.55);
@@ -1418,12 +1452,152 @@ body {
 
 /* Trình duyệt không hỗ trợ backdrop-filter thì tăng độ đục để vẫn đọc được */
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-    .calculator-card { background: rgba(255, 255, 255, 0.78); }
-    .input-group input { background: rgba(255, 255, 255, 0.9); }
+    .calculator-card,
+    .results-container { background: rgba(255, 255, 255, 0.8); }
+    .main-result-card,
+    .input-group input { background: rgba(255, 255, 255, 0.92); }
+}
+
+/* ====================================================
+   NÚT CHIA SẺ Ở GÓC + MODAL QR
+   ==================================================== */
+.btn-share {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 60;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border-radius: 50%;
+    cursor: pointer;
+    color: #1f4664;
+    background: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(30px) saturate(200%) brightness(1.1);
+    -webkit-backdrop-filter: blur(30px) saturate(200%) brightness(1.1);
+    border: 0.5px solid rgba(255, 255, 255, 0.55);
+    box-shadow: 0 8px 24px rgba(120, 60, 90, 0.14),
+                inset 0 1px 0.5px rgba(255, 255, 255, 0.9);
+    transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.btn-share:hover {
+    background: rgba(255, 255, 255, 0.55);
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 12px 28px rgba(255, 62, 108, 0.2),
+                inset 0 1px 0.5px rgba(255, 255, 255, 0.95);
+}
+
+.btn-share:active { transform: scale(0.97); }
+
+/* Nút cài app: nằm sát bên trái nút chia sẻ, ẩn khi không cài được */
+.btn-share[hidden] { display: none; }
+.btn-install { right: 68px; }
+.btn-install:hover .share-icon { transform: translateY(2px); }
+
+.share-icon {
+    font-size: 1.15rem;
+    line-height: 1;
+    transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), color 0.25s ease;
+}
+
+.btn-share:hover .share-icon {
+    transform: translateX(2px);
+    color: #ff3e6c;
+}
+
+.modal-share-dialog { max-width: 380px; }
+
+.share-body {
+    align-items: center;
+    text-align: center;
+    gap: 16px;
+}
+
+.share-hint {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: #4b6584;
+}
+
+.qr-frame {
+    padding: 14px;
+    border-radius: 20px;
+    background: #ffffff;
+    box-shadow: 0 10px 28px rgba(120, 60, 90, 0.14),
+                inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    border: 0.5px solid rgba(255, 255, 255, 0.7);
+    line-height: 0;
+}
+
+#qr-box img,
+#qr-box canvas { display: block; }
+
+.share-link-row {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+}
+
+#share-link {
+    flex: 1;
+    min-width: 0;
+    padding: 11px 14px;
+    border-radius: 12px;
+    border: 0.5px solid rgba(180, 190, 210, 0.6);
+    background: rgba(255, 255, 255, 0.6);
+    font-family: var(--font-normal);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #4b6584;
+    outline: none;
+    text-overflow: ellipsis;
+}
+
+.btn-copy-link,
+.btn-native-share {
+    padding: 11px 18px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-family: var(--font-normal);
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #0b4570;
+    background: var(--btn-gradient);
+    box-shadow: 0 4px 12px rgba(125, 185, 247, 0.35);
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.btn-copy-link:hover,
+.btn-native-share:hover { transform: translateY(-1px); }
+
+.btn-copy-link.copied {
+    background: linear-gradient(135deg, #b6f0c8 0%, #86e0a5 100%);
+    color: #1a6b3c;
+}
+
+.btn-native-share {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.5);
+    color: #4b6584;
+    box-shadow: inset 0 0 0 1px rgba(180, 190, 210, 0.5);
 }
 
 @media (max-width: 580px) {
-    .calculator-card {
-        border-radius: 28px;
+    .calculator-card,
+    .results-container { border-radius: 28px; }
+
+    .btn-share {
+        top: 12px;
+        right: 12px;
+        width: 40px;
+        height: 40px;
     }
+
+    .btn-install { right: 60px; }
 }

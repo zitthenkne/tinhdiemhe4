@@ -1,0 +1,19 @@
+{
+  "name": "Tính Điểm Hệ 4 - CLB Tình Nguyện Trường Y",
+  "short_name": "Tính Điểm 4",
+  "description": "Công cụ quy đổi điểm hệ 10 sang hệ 4 của CLB Tình Nguyện Trường Y.",
+  "lang": "vi",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fecfef",
+  "theme_color": "#fecfef",
+  "icons": [
+    {
+      "src": "assets/logo.png",
+      "sizes": "1000x1000",
+      "type": "image/png"
+    }
+  ]
+}
