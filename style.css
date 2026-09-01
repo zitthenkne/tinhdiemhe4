@@ -743,7 +743,7 @@ body::before {
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: rgba(18, 30, 49, 0.55);
+    background: rgba(120, 55, 85, 0.42);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     z-index: 9999;
@@ -765,7 +765,7 @@ body::before {
 
 .modal-dialog {
     background: #ffffff;
-    border-radius: 24px;
+    border-radius: 28px;
     width: 100%;
     max-width: 620px;
     max-height: 88vh;
@@ -786,15 +786,15 @@ body::before {
     justify-content: space-between;
     align-items: center;
     padding: 18px 24px;
-    background: linear-gradient(135deg, #fff5f7 0%, #f7f3ff 100%);
-    border-bottom: 1.5px solid #f0edf8;
+    background: linear-gradient(135deg, #ffe0ee 0%, #ffe9f4 55%, #fff1f8 100%);
+    border-bottom: 1.5px solid #ffd4e6;
 }
 
 .modal-title {
     font-family: var(--font-normal);
     font-size: 1.2rem;
     font-weight: 700;
-    color: var(--text-primary);
+    color: #b43a68;
     letter-spacing: -0.2px;
 }
 
@@ -802,7 +802,7 @@ body::before {
     background: none;
     border: none;
     font-size: 1.8rem;
-    color: #8395a7;
+    color: #dd8bad;
     cursor: pointer;
     line-height: 1;
     width: 36px;
@@ -829,24 +829,24 @@ body::before {
 }
 
 .guide-section {
-    background: #fafafa;
-    border-radius: 16px;
+    background: #fff7fb;
+    border-radius: 20px;
     padding: 18px 20px;
-    border: 1px solid #f1f2f6;
+    border: 1px solid #ffdfee;
 }
 
 .guide-heading {
     font-family: var(--font-normal);
     font-size: 1.05rem;
     font-weight: 700;
-    color: #2c3e50;
+    color: #b23a6b;
     margin-bottom: 4px;
     letter-spacing: 0.2px;
 }
 
 .guide-subtext {
     font-size: 0.88rem;
-    color: #7f8c8d;
+    color: #a9748d;
     margin-bottom: 12px;
 }
 
@@ -854,8 +854,8 @@ body::before {
     width: 100%;
     overflow-x: auto;
     margin-bottom: 14px;
-    border-radius: 12px;
-    border: 1px solid #e1e8ed;
+    border-radius: 16px;
+    border: 1px solid #ffd9e8;
 }
 
 .guide-table {
@@ -866,17 +866,17 @@ body::before {
 }
 
 .guide-table th {
-    background: #f1f5f9;
+    background: linear-gradient(180deg, #ffe6f1 0%, #ffd8e9 100%);
     padding: 10px 14px;
     font-weight: 700;
-    color: #334155;
-    border-bottom: 1.5px solid #cbd5e1;
+    color: #a83d63;
+    border-bottom: 1.5px solid #ffc4dd;
 }
 
 .guide-table td {
     padding: 10px 14px;
-    border-bottom: 1px solid #e2e8f0;
-    color: #334155;
+    border-bottom: 1px solid #ffe3ef;
+    color: #64485a;
 }
 
 .guide-table tr:last-child td {
@@ -884,46 +884,47 @@ body::before {
 }
 
 .guide-table code {
-    background: #edf2f7;
+    background: #fff0f7;
     padding: 3px 8px;
-    border-radius: 6px;
+    border-radius: 8px;
     font-family: monospace;
     font-size: 0.88rem;
-    color: #0c2461;
+    color: #c2185b;
 }
 
-.row-red { background: #fff1f2; }
-.row-yellow { background: #fefce8; }
-.row-green { background: #f0fdf4; }
+.row-red { background: #fff0f5; }
+.row-yellow { background: #fff4ec; }
+.row-green { background: #faf2ff; }
 
 .row-highlight {
-    background: #fff9db !important;
-    border-left: 4px solid #f59f00;
+    background: #ffeaf3 !important;
+    border-left: 4px solid #ff8fb1;
 }
 
 .highlight-gpa {
-    color: #d9480f;
+    color: #e5397e;
     font-size: 1.05rem;
 }
 
 .badge-grade {
     display: inline-block;
-    padding: 2px 10px;
+    padding: 3px 11px;
     border-radius: 20px;
     font-weight: 800;
     font-size: 0.82rem;
     text-align: center;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85);
 }
 
-.grade-aplus { background: #dcfce7; color: #15803d; }
-.grade-a { background: #fef3c7; color: #b45309; }
-.grade-bplus { background: #e0e7ff; color: #4338ca; }
-.grade-b { background: #e0f2fe; color: #0369a1; }
-.grade-cplus { background: #ede9fe; color: #6d28d9; }
-.grade-c { background: #f3e8ff; color: #7e22ce; }
-.grade-dplus { background: #ffedd5; color: #c2410c; }
-.grade-d { background: #fee2e2; color: #b91c1c; }
-.grade-f { background: #f1f5f9; color: #64748b; }
+.grade-aplus { background: #ffd6e8; color: #b3175c; }
+.grade-a { background: #ffdfec; color: #c02a6a; }
+.grade-bplus { background: #ffe3f0; color: #cc4a80; }
+.grade-b { background: #fdE4f4; color: #b5539a; }
+.grade-cplus { background: #f4e2ff; color: #8b4bbf; }
+.grade-c { background: #ece4ff; color: #7a53c9; }
+.grade-dplus { background: #ffe8dd; color: #c96a3f; }
+.grade-d { background: #ffe0e0; color: #c25252; }
+.grade-f { background: #f2ecf2; color: #94818f; }
 
 .guide-examples {
     display: flex;
@@ -935,32 +936,34 @@ body::before {
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 8px 12px;
+    padding: 9px 13px;
     background: #ffffff;
-    border-radius: 10px;
-    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    border: 1px solid #ffe3ef;
     font-size: 0.88rem;
 }
 
 .ex-badge {
-    background: #ff7675;
+    background: #ff85ad;
     color: #ffffff;
-    padding: 2px 8px;
-    border-radius: 6px;
+    padding: 3px 9px;
+    border-radius: 8px;
     font-size: 0.75rem;
     font-weight: 700;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
-.ex-2 .ex-badge { background: #fdcb6e; color: #2d3436; }
-.ex-3 .ex-badge { background: #00b894; }
+.ex-2 .ex-badge { background: #ffc48a; color: #7a4a20; }
+.ex-3 .ex-badge { background: #c792ea; }
 
 .guide-note {
-    background: #fff8e1;
-    border-left: 4px solid #ffb300;
+    background: #fff2f8;
+    border-left: 4px solid #ff9dbe;
     padding: 12px 16px;
-    border-radius: 10px;
+    border-radius: 14px;
     font-size: 0.9rem;
-    color: #795548;
+    color: #8a5a70;
     line-height: 1.5;
 }
 
@@ -1066,7 +1069,7 @@ body::before {
 
     .modal-dialog {
         max-height: 94vh;
-        border-radius: 18px;
+        border-radius: 22px;
     }
 
     .modal-header {
@@ -1328,14 +1331,14 @@ body::before {
 }
 
 .modal-header {
-    background: linear-gradient(135deg, rgba(255, 245, 247, 0.75) 0%, rgba(247, 243, 255, 0.75) 100%);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.6);
+    background: linear-gradient(135deg, rgba(255, 220, 236, 0.85) 0%, rgba(255, 233, 245, 0.85) 100%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.7);
 }
 
 .guide-section {
-    background: rgba(255, 255, 255, 0.5);
-    border: 1px solid rgba(255, 255, 255, 0.7);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    background: rgba(255, 247, 251, 0.72);
+    border: 1px solid rgba(255, 223, 238, 0.9);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
 /* Tiêu đề nổi hơn trên nền kính */
