@@ -6,11 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tính Điểm Hệ 4 - CLB Tình Nguyện Trường Y</title>
     <!-- Favicon: logo CLB -->
-    <link rel="icon" type="image/png" href="assets/logo.png">
-    <link rel="apple-touch-icon" href="assets/logo.png">
+    <link rel="icon" type="image/png" href="assets/logo-192.png">
+    <link rel="apple-touch-icon" href="assets/logo-192.png">
     <!-- PWA: cho phép cài app về màn hình chính điện thoại -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#fecfef">
+    <!-- Khoá sáng: không cho Chrome Android tự đảo màu trang (auto dark theme) -->
+    <meta name="color-scheme" content="light">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -21,8 +23,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Paytone+One&family=Quicksand:wght@400;500;600;700&family=Tapestry&display=swap"
         rel="stylesheet">
-    <!-- Font Awesome: lấy sẵn icon chia sẻ -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="preload" as="image" href="assets/background.webp" fetchpriority="high">
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -33,7 +34,7 @@
         <button type="button" class="btn-share btn-install" id="btn-install" hidden
                 title="Cài ứng dụng về điện thoại"
                 aria-label="Cài ứng dụng về điện thoại">
-            <i class="fa-solid fa-download share-icon"></i>
+            <svg class="share-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
         </button>
 
         <!-- Thông báo nhỏ nhắc cài app, mũi tên chỉ lên nút tải -->
@@ -47,7 +48,7 @@
         <button type="button" class="btn-share" id="btn-share"
                 title="Chia sẻ công cụ tính điểm đến bạn bè"
                 aria-label="Chia sẻ công cụ tính điểm đến bạn bè">
-            <i class="fa-solid fa-share share-icon"></i>
+            <svg class="share-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>
         </button>
 
         <!-- Các hạt bong bóng bay lơ lửng trong nền -->
@@ -70,7 +71,7 @@
             <header class="header">
                 <div class="logo-wrapper">
                     <!-- Logo CLB với vòng sáng ngũ sắc -->
-                    <img src="assets/logo.png" alt="Logo CLB" class="club-logo" id="club-logo-img">
+                    <img src="assets/logo.webp" alt="Logo CLB" class="club-logo" id="club-logo-img" width="100" height="100" fetchpriority="high">
                 </div>
                 <div class="title-group">
                     <h2 class="club-subtitle">CÂU LẠC BỘ</h2>
@@ -100,7 +101,7 @@
 
                 <!-- Cô bé chibi dễ thương 1 (Chờ tính điểm - tay đặt lên má) -->
                 <div class="chibi-character chibi-normal" id="chibi-normal">
-                    <img src="assets/girl_smile.png" alt="Cô bé cười" class="chibi-img" id="chibi-normal-img">
+                    <img src="assets/girl_smile.webp" alt="Cô bé cười" class="chibi-img" id="chibi-normal-img" width="150" height="150" decoding="async">
                 </div>
             </section>
 
@@ -152,8 +153,8 @@
 
                     <!-- Cô bé chibi dễ thương 2 (Đã tính điểm - giơ ngón tay cái) -->
                     <div class="chibi-character chibi-result" id="chibi-result">
-                        <img src="assets/girl_thumbsup.png" alt="Cô bé giơ ngón cái" class="chibi-img"
-                            id="chibi-result-img">
+                        <img src="assets/girl_thumbsup.webp" alt="Cô bé giơ ngón cái" class="chibi-img"
+                            id="chibi-result-img" width="150" height="150" loading="lazy" decoding="async">
                     </div>
                 </div>
             </section>
@@ -343,8 +344,8 @@
         </footer>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script src="app.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script defer src="app.js"></script>
 </body>
 
 </html>

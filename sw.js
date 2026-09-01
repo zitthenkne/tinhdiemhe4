@@ -10,7 +10,7 @@
 
    Sửa code xong nhớ đổi CACHE_NAME (v3 -> v4...) để máy user xoá cache cũ.
    ==================================================== */
-const CACHE_NAME = 'tinhdiemhe4-v3';
+const CACHE_NAME = 'tinhdiemhe4-v4';
 
 // File của mình: luôn tải sẵn để offline vẫn mở được
 const SHELL = [
@@ -19,16 +19,16 @@ const SHELL = [
     'style.css',
     'app.js',
     'manifest.json',
-    'assets/logo.png',
-    'assets/background.svg',
-    'assets/girl_smile.png',
-    'assets/girl_thumbsup.png'
+    'assets/logo.webp',
+    'assets/logo-192.png',
+    'assets/background.webp',
+    'assets/girl_smile.webp',
+    'assets/girl_thumbsup.webp'
 ];
 
 // File ngoài (font, icon, thư viện QR): tải sẵn nếu được, lỗi cũng không sao
 const CDN = [
     'https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Paytone+One&family=Quicksand:wght@400;500;600;700&family=Tapestry&display=swap',
-    'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css',
     'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js'
 ];
 
