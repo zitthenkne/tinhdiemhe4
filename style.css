@@ -217,8 +217,7 @@ body::before {
 @media (prefers-reduced-motion: reduce) {
     .logo-wrapper::before,
     .sparkle,
-    .bubble,
-    .card-sheen {
+    .bubble {
         animation: none;
     }
 }
@@ -988,9 +987,21 @@ body::before {
    ---------------------------------------------------- */
 @media (max-width: 580px) {
     .app-container {
-        padding: 20px 16px;
+        /* Thoáng hơn: nới lề 2 bên và chừa khoảng thở phía trên logo.
+           flex-start thay vì center: canh giữa mà nội dung cao hơn màn hình
+           thì phần trên bị cắt và không cuộn tới được. */
+        justify-content: flex-start;
+        padding: 72px 30px 32px;
     }
-    
+
+    .header {
+        margin-bottom: 26px;
+    }
+
+    .logo-wrapper {
+        margin-bottom: 18px;
+    }
+
     .club-title {
         font-size: 1.35rem;
     }
@@ -1000,7 +1011,7 @@ body::before {
     }
     
     .calculator-card {
-        padding: 25px 20px 30px 20px;
+        padding: 30px 20px 34px 20px;
     }
     
     .btn-calculate {
@@ -1013,12 +1024,13 @@ body::before {
         padding: 10px 16px;
     }
     
-    /* Thu nhỏ và chỉnh vị trí chibi trên điện thoại để không bị che khuất */
+    /* Thu nhỏ và đẩy chibi ra ngoài mép card: lề 2 bên rộng ra thì card hẹp
+       lại, để nguyên là chibi đè lên chữ nút "Xem công thức". */
     .calculator-card .chibi-normal {
-        width: 120px;
-        height: 120px;
-        bottom: -20px;
-        right: -10px;
+        width: 104px;
+        height: 104px;
+        bottom: -16px;
+        right: -20px;
     }
     
     .results-container {
@@ -1026,10 +1038,10 @@ body::before {
     }
     
     .results-container .chibi-result {
-        width: 130px;
-        height: 130px;
-        bottom: -25px;
-        right: -10px;
+        width: 112px;
+        height: 112px;
+        bottom: -20px;
+        right: -20px;
     }
     
     .main-result-card {
@@ -1115,6 +1127,10 @@ body::before {
 }
 
 @media (max-width: 380px) {
+    .app-container {
+        padding: 56px 22px 24px;
+    }
+
     .sub-results-row {
         grid-template-columns: 1fr;
     }
@@ -1403,30 +1419,6 @@ body::before {
             mask-composite: exclude;
     pointer-events: none;
     z-index: 0;
-}
-
-/* Dải sáng lướt chậm ngang mặt kính */
-.calculator-card > .card-sheen {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 45%;
-    height: 100%;
-    border-radius: inherit;
-    background: linear-gradient(100deg,
-                rgba(255, 255, 255, 0) 0%,
-                rgba(255, 255, 255, 0.45) 50%,
-                rgba(255, 255, 255, 0) 100%);
-    filter: blur(6px);
-    pointer-events: none;
-    z-index: 0;
-    animation: sheen-sweep 9s ease-in-out infinite;
-}
-
-@keyframes sheen-sweep {
-    0%, 65%, 100% { transform: translateX(-160%) skewX(-16deg); opacity: 0; }
-    72%           { opacity: 0.9; }
-    99%           { transform: translateX(320%) skewX(-16deg); opacity: 0; }
 }
 
 /* Chữ trên material mỏng cần đậm hơn để đủ tương phản (kiểu label iOS) */
