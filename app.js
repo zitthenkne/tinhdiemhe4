@@ -386,9 +386,9 @@ document.addEventListener('DOMContentLoaded', () => {
             message = "Đừng nản lòng! Ai cũng có những lúc không như ý. Điều quan trọng là đứng dậy và tìm ra phương pháp học tập hiệu quả hơn. CLB luôn sẵn sàng hỗ trợ bạn. Vìa đây anh chị thưn thưn. ❤️";
         }
 
-        // 5. Hiển thị kết quả ra giao diện
-        resScore10.textContent = score10.toFixed(2);
-        resScore4.textContent = score4.toFixed(1);
+        // 5. Hiển thị kết quả ra giao diện với animation đếm số
+        animateValue(resScore10, 0, score10, 800, true);
+        animateValue(resScore4, 0, score4, 800, true);
         resLetter.textContent = letterGrade;
         
         // Trả lại định dạng viền/màu chữ message bình thường
@@ -406,6 +406,30 @@ document.addEventListener('DOMContentLoaded', () => {
         showNextGoal(x, y, score10);
 
         // 6. Kích hoạt hiệu ứng mở rộng phần kết quả
+        // Trigger hiệu ứng nút bấm (làm mạnh hơn trong CSS)
+        btnCalculate.classList.remove('calculated');
+        void btnCalculate.offsetWidth; // Trigger reflow
+        btnCalculate.classList.add('calculated');
+
+        // Hiệu ứng cho card kết quả
+        const mainCard = document.querySelector('.main-result-card');
+        mainCard.classList.remove('glow', 'shake');
+        void mainCard.offsetWidth; // Trigger reflow
+        
+        if (score4 >= 3.0) {
+            // Giỏi, Xuất sắc
+            mainCard.classList.add('glow');
+            if (typeof confetti === 'function') {
+                triggerConfetti();
+            }
+        } else if (score4 < 2.0) {
+            // Yếu, Kém
+            mainCard.classList.add('shake');
+        }
+
+        // Trigger lại hiệu ứng hiện kết quả nếu đã mở sẵn
+        resultsWrapper.classList.remove('show');
+        void resultsWrapper.offsetWidth; // Trigger reflow
         resultsWrapper.classList.add('show');
         
         // Ẩn cô bé 1 ở card tính điểm
@@ -492,6 +516,59 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => {
             resultsWrapper.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }, 150);
+    }
+
+    /**
+     * Hàm animate nhảy số 
+     */
+    function animateValue(obj, start, end, duration, isDecimal = false) {
+        let startTimestamp = null;
+        const step = (timestamp) => {
+            if (!startTimestamp) startTimestamp = timestamp;
+            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+            
+            // Dùng easeOutQuart cho mượt
+            const easeProgress = 1 - Math.pow(1 - progress, 4);
+            const currentVal = progress * (end - start) + start;
+            
+            obj.textContent = isDecimal ? currentVal.toFixed(2) : Math.floor(currentVal);
+            
+            if (progress < 1) {
+                window.requestAnimationFrame(step);
+            } else {
+                obj.textContent = isDecimal ? end.toFixed(2) : end;
+            }
+        };
+        window.requestAnimationFrame(step);
+    }
+
+    /**
+     * Hàm bắn pháo giấy (confetti)
+     */
+    function triggerConfetti() {
+        const duration = 2000;
+        const end = Date.now() + duration;
+
+        (function frame() {
+            confetti({
+                particleCount: 5,
+                angle: 60,
+                spread: 55,
+                origin: { x: 0, y: 0.8 },
+                colors: ['#ff8e9e', '#7db9f7', '#ffd700']
+            });
+            confetti({
+                particleCount: 5,
+                angle: 120,
+                spread: 55,
+                origin: { x: 1, y: 0.8 },
+                colors: ['#ff8e9e', '#7db9f7', '#ffd700']
+            });
+
+            if (Date.now() < end) {
+                requestAnimationFrame(frame);
+            }
+        }());
     }
 });
 

@@ -1693,3 +1693,83 @@ body::before {
 
     .install-toast::before { right: 59px; }
 }
+/* --- ANIMATIONS THÊM VÀO CHO NÚT TÍNH ÐI?M VÀ K?T QU? --- */
+@keyframes buttonPop {
+    0% { transform: scale(1); }
+    40% { transform: scale(0.92); }
+    70% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.btn-calculate.calculated {
+    animation: buttonPop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes slideUpFadePop {
+    0% { opacity: 0; transform: translateY(40px) scale(0.95); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes scorePop {
+    0% { transform: scale(0.5); opacity: 0; }
+    60% { transform: scale(1.2); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.results-wrapper.show .main-result-card {
+    opacity: 0;
+    animation: slideUpFadePop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.results-wrapper.show .main-score-value {
+    animation: scorePop 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.15s forwards;
+    opacity: 0;
+}
+
+.results-wrapper.show .sub-results-row {
+    opacity: 0;
+    animation: slideUpFadePop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.15s forwards;
+}
+
+.results-wrapper.show .discovery-section.fanpage-section {
+    opacity: 0;
+    animation: slideUpFadePop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.3s forwards;
+}
+
+.results-wrapper.show .chibi-result {
+    opacity: 0;
+    animation: slideUpFadePop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.45s forwards;
+}
+/* Tang d? n?y cho nút tính di?m */
+@keyframes buttonPopWow {
+    0% { transform: scale(1); }
+    30% { transform: scale(0.85); box-shadow: 0 0 0 rgba(125, 185, 247, 0); }
+    50% { transform: scale(1.15); box-shadow: 0 10px 30px rgba(125, 185, 247, 0.6); }
+    70% { transform: scale(0.95); }
+    100% { transform: scale(1); }
+}
+
+.btn-calculate.calculated {
+    animation: buttonPopWow 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Thêm l?p lánh cho th? k?t qu? */
+@keyframes glowPulse {
+    0% { box-shadow: 0 8px 24px rgba(0, 0, 0, 0.03); }
+    50% { box-shadow: 0 0 30px rgba(255, 215, 0, 0.6), inset 0 0 20px rgba(255, 215, 0, 0.3); border-color: #ffd700; }
+    100% { box-shadow: 0 8px 24px rgba(0, 0, 0, 0.03); }
+}
+
+.main-result-card.glow {
+    animation: glowPulse 1.5s ease-out;
+}
+
+@keyframes shakeBad {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+.main-result-card.shake {
+    animation: shakeBad 0.6s ease-in-out;
+}
