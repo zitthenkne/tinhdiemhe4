@@ -386,6 +386,27 @@
 
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script defer src="app.js"></script>
+
+<script>
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.getElementById('correct-answers').value = '78';
+    document.getElementById('total-questions').value = '78';
+    document.getElementById('btn-calculate').click();
+  }, 50);
+  // Lúc hệ 4 đang là bản sao chờ biến đổi
+  setTimeout(() => {
+    const s4 = document.getElementById('res-score4');
+    const L = document.getElementById('res-letter');
+    document.title = 'DIAG ' + JSON.stringify({
+      score4Text: s4.textContent, score4Copy: s4.classList.contains('just-copied'),
+      score4Anim: getComputedStyle(s4).animationName,
+      letterText: L.textContent, letterCopy: L.classList.contains('just-copied'),
+      letterAnim: getComputedStyle(L).animationName
+    });
+  }, 6200);
+});
+</script>
 </body>
 
 </html>

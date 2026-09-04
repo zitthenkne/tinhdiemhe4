@@ -470,7 +470,8 @@ body::before {
 }
 
 .results-wrapper.show {
-    max-height: 1000px;
+    /* Nới trần vì sân khấu công thức làm phần kết quả cao thêm, tránh bị cắt trên máy nhỏ */
+    max-height: 1600px;
     opacity: 1;
     transform: translateY(0);
     overflow: visible; /* Let chibi overflow */
@@ -493,6 +494,7 @@ body::before {
 
 /* Card kết quả chính màu trắng */
 .main-result-card {
+    position: relative;
     background: #ffffff;
     border-radius: 20px;
     padding: 24px 28px;
@@ -519,6 +521,7 @@ body::before {
 }
 
 .main-score-value {
+    display: inline-block;
     font-family: var(--font-rounded);
     font-size: 3.6rem;
     font-weight: 800;
@@ -1693,7 +1696,7 @@ body::before {
 
     .install-toast::before { right: 59px; }
 }
-/* --- ANIMATIONS TH�M V�O CHO N�T T�NH �I?M V� K?T QU? --- */
+/* --- ANIMATIONS TH�M V�O CHO N�T T�NH �I?M V� K?T QU? --- */
 @keyframes buttonPop {
     0% { transform: scale(1); }
     40% { transform: scale(0.92); }
@@ -1740,7 +1743,7 @@ body::before {
     opacity: 0;
     animation: slideUpFadePop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.45s forwards;
 }
-/* Tang d? n?y cho n�t t�nh di?m */
+/* Tang d? n?y cho n�t t�nh di?m */
 @keyframes buttonPopWow {
     0% { transform: scale(1); }
     30% { transform: scale(0.85); box-shadow: 0 0 0 rgba(125, 185, 247, 0); }
@@ -1753,7 +1756,7 @@ body::before {
     animation: buttonPopWow 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-/* Th�m l?p l�nh cho th? k?t qu? */
+/* Th�m l?p l�nh cho th? k?t qu? */
 @keyframes glowPulse {
     0% { box-shadow: 0 8px 24px rgba(0, 0, 0, 0.03); }
     50% { box-shadow: 0 0 30px rgba(255, 215, 0, 0.6), inset 0 0 20px rgba(255, 215, 0, 0.3); border-color: #ffd700; }
@@ -1772,4 +1775,307 @@ body::before {
 
 .main-result-card.shake {
     animation: shakeBad 0.6s ease-in-out;
+}
+
+
+/* ----------------------------------------------------
+   NÚT TUỲ CHỈNH + MODAL CHỌN CHẾ ĐỘ HIỆN ĐIỂM
+   ---------------------------------------------------- */
+.btn-settings {
+    left: 16px;
+    right: auto;
+}
+
+.modal-settings-dialog {
+    max-width: 340px;
+}
+
+.mode-switch {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 14px;
+}
+
+.mode-option {
+    cursor: pointer;
+}
+
+/* Ẩn radio thật, chỉ tô màu cái nhãn */
+.mode-option input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.mode-option span {
+    display: inline-block;
+    padding: 8px 16px;
+    border-radius: 50px;
+    background: rgba(255, 255, 255, 0.7);
+    border: 1.5px solid #dcdde1;
+    color: #4b6584;
+    font-family: var(--font-normal);
+    font-size: 0.9rem;
+    font-weight: 700;
+    transition: all 0.25s ease;
+    user-select: none;
+}
+
+.mode-option input:checked + span {
+    background: var(--btn-gradient);
+    border-color: #7db9f7;
+    color: var(--btn-text);
+    box-shadow: 0 4px 12px rgba(125, 185, 247, 0.35);
+}
+
+.mode-option input:focus-visible + span {
+    outline: 2px solid #ff8e9e;
+    outline-offset: 2px;
+}
+
+/* ----------------------------------------------------
+   HIỆU ỨNG QUAY SỐ HỒI HỘP
+   ---------------------------------------------------- */
+
+/* Card rung nhẹ ánh sáng trong lúc "đang chấm điểm" cho hồi hộp */
+.main-result-card.suspense-pulse {
+    animation: suspense-pulse 0.9s ease-in-out infinite;
+}
+
+@keyframes suspense-pulse {
+    0%, 100% { box-shadow: var(--card-shadow); }
+    50% {
+        box-shadow: 0 15px 45px rgba(255, 142, 158, 0.5), 0 5px 25px rgba(255, 142, 158, 0.35);
+    }
+}
+
+/* ----------------------------------------------------
+   SÂN KHẤU CÔNG THỨC (chỉ chạy ở chế độ hồi hộp)
+   ---------------------------------------------------- */
+.calc-stage {
+    margin-bottom: 18px;
+    padding: 16px 18px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.72);
+    border: 1.5px dashed rgba(255, 142, 158, 0.55);
+    text-align: center;
+    /* Không dùng fill-mode: để animation nhả style ra thì .collapsing mới transition được */
+    animation: calc-stage-in 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    transition: max-height 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.45s ease,
+                transform 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                margin-bottom 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+                padding-top 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+                padding-bottom 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.calc-stage[hidden] { display: none; }
+
+/* Xong việc thì xẹp dần chiều cao để bảng điểm trôi lên chỗ trống, không giật layout */
+.calc-stage.collapsing {
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(-6px) scale(0.98);
+    margin-bottom: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    border-width: 0;
+}
+
+@keyframes calc-stage-in {
+    from { opacity: 0; transform: translateY(-14px) scale(0.98); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.calc-stage-title {
+    font-family: var(--font-normal);
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #7d8e9e;
+    margin-bottom: 10px;
+}
+
+.calc-formula {
+    font-family: var(--font-rounded);
+    font-size: clamp(0.9rem, 3.6vw, 1.05rem);
+    font-weight: 700;
+    color: #123c5e;
+    line-height: 2.1;
+    font-variant-numeric: tabular-nums;
+    transition: text-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.calc-formula .calc-lhs { color: #ff3e6c; }
+
+/* Công thức sáng bừng lên đúng lúc "bấm máy" ra kết quả */
+.calc-formula.computing {
+    transform: scale(1.05);
+    text-shadow: 0 0 16px rgba(255, 62, 108, 0.6);
+}
+
+/* Ô trống trong công thức, chờ số của người dùng bay tới */
+.calc-slot {
+    display: inline-block;
+    min-width: 1.4em;
+    padding: 1px 7px;
+    border-radius: 9px;
+    background: rgba(255, 214, 224, 0.5);
+    border: 1.5px dashed #ff8e9e;
+    color: #ff3e6c;
+}
+
+.calc-slot.filled {
+    background: #ffe6ec;
+    border-style: solid;
+    animation: slot-settle 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes slot-settle {
+    0%   { transform: scale(1.35); box-shadow: 0 0 0 6px rgba(255, 142, 158, 0); }
+    45%  { transform: scale(0.97); box-shadow: 0 0 0 5px rgba(255, 142, 158, 0.28); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 142, 158, 0); }
+}
+
+.calc-result-line {
+    margin-top: 12px;
+    font-family: var(--font-rounded);
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #d35400;
+}
+
+.calc-result-line[hidden] { display: none; }
+
+.calc-eq {
+    margin-right: 6px;
+    color: #7d8e9e;
+}
+
+/* span nên phải inline-block thì mới scale được lúc nảy */
+.calc-result-value {
+    display: inline-block;
+}
+
+/* Con số đang bay từ ô này sang ô kia */
+.fly-token {
+    /* absolute + toạ độ theo trang: vừa cuộn trang vừa bay vẫn bám đúng ô đích */
+    position: absolute;
+    z-index: 200;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    /* Ngang: rời đi dứt khoát rồi thả trôi dần */
+    transition-property: transform;
+    transition-timing-function: cubic-bezier(0.2, 0.75, 0.3, 1);
+    will-change: transform;
+}
+
+.fly-token-inner {
+    display: inline-block;
+    transform: scale(1.22);
+    font-family: var(--font-rounded);
+    font-size: clamp(1.15rem, 4.5vw, 1.6rem);
+    font-weight: 800;
+    color: #ff3e6c;
+    text-shadow: 0 4px 14px rgba(255, 62, 108, 0.4);
+    /* Dọc: chùng lại lúc đầu rồi mới xuống -> hợp với chiều ngang thành vòng cung */
+    transition-property: transform;
+    transition-timing-function: cubic-bezier(0.5, 0.02, 0.35, 1);
+    will-change: transform;
+}
+
+/* Ô kết quả để mờ trong lúc chờ số bay tới */
+.awaiting-value { opacity: 0.28; }
+
+/* Mỗi ký tự số/chữ là 1 ô riêng để nhảy số rồi khoá lại từng ô một */
+.digit-cell {
+    display: inline-block;
+    min-width: 0.55em;
+}
+
+/* Dấu chấm / dấu cộng thì để rộng tự nhiên, không thì "2 . 50" bị giãn xấu */
+.digit-cell.is-punct {
+    min-width: 0;
+}
+
+/* Khoá từng ký tự: rơi xuống có điểm dừng rõ nhưng nảy mềm, không khựng đơ */
+.digit-cell.digit-drop {
+    animation: digit-drop 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes digit-drop {
+    0%   { transform: translateY(-48%) scale(1.12); opacity: 0.35; }
+    58%  { transform: translateY(5%) scale(0.96); opacity: 1; }
+    80%  { transform: translateY(-2%) scale(1.02); }
+    100% { transform: translateY(0) scale(1); }
+}
+
+/* Con số nảy một nhịp trước khi bay đi / tách ra, cho có điểm nhấn.
+   Không đụng tới display ở đây: res-score10 là block, đổi display giữa chừng sẽ xô layout */
+.value-pulse {
+    animation: value-pulse 0.5s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+@keyframes value-pulse {
+    0%, 100% { transform: scale(1); }
+    45%      { transform: scale(1.18); }
+}
+
+/* Ô nhập nhấp nháy đúng lúc con số của nó rời đi */
+.input-group input.emitting {
+    animation: input-emit 0.5s ease;
+}
+
+@keyframes input-emit {
+    0%, 100% { transform: scale(1); box-shadow: none; }
+    40%      { transform: scale(1.03); box-shadow: 0 0 0 4px rgba(255, 142, 158, 0.3); }
+}
+
+
+/* ----------------------------------------------------
+   BẢN SAO ĐIỂM HỆ 10 CHỜ BIẾN ĐỔI + ĐÓNG MỘC
+   ---------------------------------------------------- */
+
+/* Bản sao vừa đáp xuống, chưa phải giá trị thật -> thở nhẹ cho biết là đang chờ */
+.just-copied {
+    animation: just-copied 0.9s ease-in-out infinite;
+}
+
+@keyframes just-copied {
+    0%, 100% { opacity: 0.55; }
+    50%      { opacity: 0.9; }
+}
+
+/* Đóng mộc: nện từ trên xuống một phát rồi rung nhẹ lại đúng chỗ.
+   Đủ 4 class để thắng .results-wrapper.show .main-score-value ở trên.
+   BẮT BUỘC có opacity: 1 — ô điểm hệ 4 vốn để opacity: 0, nó chỉ hiện được nhờ
+   scorePop ... forwards giữ lại. Rule này đè mất animation đó, không khai báo lại
+   opacity thì đóng mộc xong số biến mất luôn. */
+.results-wrapper.show .main-score-value.stamp-hit {
+    opacity: 1;
+    animation: stamp-hit 0.55s cubic-bezier(0.2, 1.25, 0.3, 1);
+}
+
+@keyframes stamp-hit {
+    0%   { transform: scale(2.5) rotate(-9deg); opacity: 0; }
+    32%  { transform: scale(0.86) rotate(3deg); opacity: 1; }
+    52%  { transform: scale(1.08) rotate(-2deg); }
+    72%  { transform: scale(0.97) rotate(1deg); }
+    100% { transform: scale(1) rotate(0); }
+}
+
+/* Vòng sóng lan ra từ mép card đúng lúc mộc đóng xuống */
+.main-result-card.stamped::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    border: 3px solid rgba(255, 62, 108, 0.65);
+    animation: stamp-wave 0.6s ease-out forwards;
+    pointer-events: none;
+}
+
+@keyframes stamp-wave {
+    from { transform: scale(0.94); opacity: 0.9; }
+    to   { transform: scale(1.09); opacity: 0; }
 }
