@@ -10,7 +10,7 @@
 
    Sửa code xong nhớ đổi CACHE_NAME (v3 -> v4...) để máy user xoá cache cũ.
    ==================================================== */
-const CACHE_NAME = 'tinhdiemhe4-v9';
+const CACHE_NAME = 'tinhdiemhe4-v10';
 
 // File của mình: luôn tải sẵn để offline vẫn mở được
 const SHELL = [

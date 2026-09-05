@@ -2036,14 +2036,13 @@ body::before {
    BẢN SAO ĐIỂM HỆ 10 CHỜ BIẾN ĐỔI + ĐÓNG MỘC
    ---------------------------------------------------- */
 
-/* Bản sao vừa đáp xuống, chưa phải giá trị thật -> thở nhẹ cho biết là đang chờ */
+/* Bản sao vừa đáp xuống, chưa phải giá trị thật -> làm nhạt đi cho biết là đang chờ.
+   Dùng filter, KHÔNG dùng animation/opacity: ô điểm hệ 4 đang bị
+   ".results-wrapper.show .main-score-value { opacity: 0; animation: scorePop ... forwards }"
+   chiếm 2 thuộc tính đó — đụng vào là số biến mất hoặc bị pop lại từ đầu. */
 .just-copied {
-    animation: just-copied 0.9s ease-in-out infinite;
-}
-
-@keyframes just-copied {
-    0%, 100% { opacity: 0.55; }
-    50%      { opacity: 0.9; }
+    filter: opacity(0.5) saturate(0.7);
+    transition: filter 0.3s ease;
 }
 
 /* Đóng mộc: nện từ trên xuống một phát rồi rung nhẹ lại đúng chỗ.
