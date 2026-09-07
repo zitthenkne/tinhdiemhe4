@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const totalInput = document.getElementById('total-questions');
     const btnCalculate = document.getElementById('btn-calculate');
     const resultsWrapper = document.getElementById('results-wrapper');
+    const btnExplore = document.getElementById('btn-explore');
 
     const resScore10 = document.getElementById('res-score10');
     const resScore4 = document.getElementById('res-score4');
@@ -437,6 +438,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Dọn tàn dư của lượt trước (bấm tính lại giữa chừng / đổi chế độ khi số còn đang bay)
         resetStage();
+        clearStageFx();
         document.querySelectorAll('.fly-token').forEach((el) => el.remove());
         [resScore10, resScore4, resLetter].forEach((el) => el.classList.remove('awaiting-value'));
 
@@ -455,19 +457,54 @@ document.addEventListener('DOMContentLoaded', () => {
             showNextGoal(x, y, score10);
 
             // Hiệu ứng cho card kết quả
-            mainResultCard.classList.remove('suspense-pulse', 'glow', 'shake');
+            mainResultCard.classList.remove('suspense-pulse', 'suspense-rush', 'glow', 'shake');
             void mainResultCard.offsetWidth; // Trigger reflow
 
             if (score4 >= 3.0) {
                 // Giỏi, Xuất sắc
                 mainResultCard.classList.add('glow');
                 if (typeof confetti === 'function') {
-                    triggerConfetti();
+                    // Đợi card vào xong rồi mới bắn: confetti chạy trên main thread,
+                    // bắn cùng lúc là hoạt hoạ vào bị rớt frame
+                    setTimeout(triggerConfetti, 450);
                 }
             } else if (score4 < 2.0) {
                 // Yếu, Kém
                 mainResultCard.classList.add('shake');
             }
+
+            // Mọi thứ lắng xuống rồi mới tới lượt CTA "khám phá tiện ích" nhảy vào.
+            // Ô "còn thiếu mấy câu" vừa hiện đã đẩy CTA xuống dưới màn hình, nên
+            // kéo nó vào tầm mắt trước ('nearest' = kéo ít nhất có thể, không mất điểm),
+            // chờ cuộn êm rồi mới cho nhảy — diễn ngoài màn hình thì phí.
+            setTimeout(() => {
+                if (token !== revealToken) return;
+                scrollCtaIntoFrame();
+                setTimeout(() => {
+                    if (token !== revealToken) return;
+                    btnExplore.classList.remove('cta-arrive');
+                    void btnExplore.offsetWidth; // Reflow để lượt tính sau nhảy lại từ đầu
+                    btnExplore.classList.add('cta-arrive');
+
+                    // Một nhúm pháo giấy bung ngay tại nút cho đã mắt (1 phát, không rải dài)
+                    if (typeof confetti === 'function'
+                        && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                        const r = btnExplore.getBoundingClientRect();
+                        setTimeout(() => confetti({
+                            particleCount: 36,
+                            spread: 68,
+                            startVelocity: 26,
+                            scalar: 0.75,
+                            ticks: 110,
+                            origin: {
+                                x: (r.left + r.width / 2) / window.innerWidth,
+                                y: (r.top + r.height / 2) / window.innerHeight
+                            },
+                            colors: ['#ff8e9e', '#7db9f7', '#ffd700', '#ffffff']
+                        }), 180);
+                    }
+                }, 420);
+            }, 900);
         };
 
         if (suspense) {
@@ -509,10 +546,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Cuộn mượt xuống vùng kết quả (chế độ hồi hộp tự lo phần cuộn tới công thức)
         if (!suspense) {
-            setTimeout(() => {
+            // Chiều cao đã chốt ngay khi hiện, cuộn luôn ở frame kế cho khỏi giật
+            requestAnimationFrame(() => {
                 resultsWrapper.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            }, 150);
+            });
         }
+    }
+
+    /**
+     * Cuộn sao cho thấy được nút CTA "khám phá tiện ích" mà không dính mép máy:
+     * màn đủ dài để chứa trọn khung kết quả + CTA thì canh giữa cả cụm,
+     * còn không thì bám mép dưới, vẫn chừa khoảng thở.
+     */
+    function scrollCtaIntoFrame() {
+        const PAD = 24;
+        const vh = window.innerHeight;
+        const top = resultsWrapper.getBoundingClientRect().top + window.scrollY - PAD;
+        const bottom = btnExplore.getBoundingClientRect().bottom + window.scrollY + PAD;
+        const blockHeight = bottom - top;
+
+        const y = blockHeight <= vh
+            ? top - (vh - blockHeight) / 2   // Dư chỗ: đẩy cả cụm vào giữa màn
+            : bottom - vh;                   // Chật: ưu tiên cho CTA lọt hẳn vào
+
+        window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
     }
 
     /**
@@ -568,9 +625,10 @@ document.addEventListener('DOMContentLoaded', () => {
         // Huỷ lượt hiện điểm đang chạy dở (nếu có) rồi mới ghi đè kết quả
         revealToken++;
         resetStage();
+        clearStageFx();
         document.querySelectorAll('.fly-token').forEach((el) => el.remove());
         [resScore10, resScore4, resLetter].forEach((el) => el.classList.remove('awaiting-value'));
-        mainResultCard.classList.remove('suspense-pulse', 'stamped');
+        mainResultCard.classList.remove('suspense-pulse', 'suspense-rush', 'stamped');
 
         nextGoal.hidden = true;
         // Cài đặt các giá trị trống/không xác định
@@ -594,9 +652,9 @@ document.addEventListener('DOMContentLoaded', () => {
         chibiNormal.classList.remove('hide');
 
         // Cuộn xuống để người dùng thấy thông báo lỗi rõ ràng
-        setTimeout(() => {
+        requestAnimationFrame(() => {
             resultsWrapper.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }, 150);
+        });
     }
 
     /**
@@ -708,6 +766,11 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => resetStage(), duration);
     }
 
+    // Tắt màn tối + mọi hiệu ứng chấn động của sân khấu (bấm tính lại giữa chừng, lỗi nhập...)
+    function clearStageFx() {
+        document.body.classList.remove('calc-focus', 'calc-lights-up', 'stamp-quake', 'stamp-flash');
+    }
+
     // Trả sân khấu công thức về trạng thái sạch (ẩn, bỏ mọi style co giãn dở dang)
     function resetStage() {
         calcStage.hidden = true;
@@ -730,11 +793,16 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         resetStage();
+        clearStageFx();
         calcStage.hidden = false;
-        calcFormula.classList.remove('computing');
+        calcStage.classList.remove('computing');
+        calcFormula.classList.remove('computing', 'writing');
         calcResultLine.hidden = true;
         calcResultValue.textContent = '0.00';
         calcFormula.innerHTML = formulaHtml(x, y);
+        void calcFormula.offsetWidth; // Reflow để nét "viết công thức" chạy lại từ đầu
+        calcFormula.classList.add('writing');
+        document.body.classList.add('calc-focus'); // Tắt đèn cả trang, chừa mỗi khung kết quả
         const slots = Array.from(calcFormula.querySelectorAll('.calc-slot'));
 
         // Ba ô kết quả để mờ, chờ số bay tới
@@ -745,11 +813,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 1. Màn hình bắt đầu trôi nhẹ xuống chỗ công thức, số bay theo trong lúc trang còn đang trôi
         //    (token bám toạ độ trang nên vừa cuộn vừa bay vẫn đáp đúng ô)
-        at(150, () => calcStage.scrollIntoView({ behavior: 'smooth', block: 'center' }));
+        at(200, () => calcStage.scrollIntoView({ behavior: 'smooth', block: 'center' }));
 
-        const FLY_IN = 380;
-        const STAGGER = 140;
-        const FLIGHT = 700;
+        // Nhịp chậm có chủ đích: viết xong công thức mới thả số xuống, mỗi số một nhịp riêng
+        const FLY_IN = 820;
+        const STAGGER = 190;
+        const FLIGHT = 820;
         at(FLY_IN, () => {
             slots.forEach((slot, i) => {
                 const isX = slot.dataset.src === 'x';
@@ -771,17 +840,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 2. Số đã xuống hết công thức -> lướt sao cho thấy trọn bảng kết quả rồi mới bấm máy
         const filled = FLY_IN + (slots.length - 1) * STAGGER + FLIGHT;
-        at(filled + 120, () => scrollToFit(resultsContainer));
-        at(filled + 220, () => calcFormula.classList.add('computing'));
-        at(filled + 620, () => {
+        at(filled + 200, () => scrollToFit(resultsContainer));
+        //    Số điền xong để yên một nhịp cho người ta đọc công thức, rồi mới bấm máy:
+        //    3 lượt quét sáng, đủ dài để nín thở chứ không loé một cái là xong
+        const COMPUTE = 1860;
+        at(filled + 560, () => {
+            calcFormula.classList.add('computing');
+            calcStage.classList.add('computing');
+        });
+        const computeDone = filled + 260 + COMPUTE;
+        at(computeDone, () => {
             calcFormula.classList.remove('computing');
+            calcStage.classList.remove('computing');
             calcResultLine.hidden = false;
-            revealChars(calcResultValue, score10.toFixed(2), 320, 85, token);
+            revealChars(calcResultValue, score10.toFixed(2), 500, 120, token);
         });
 
         // 3. Điểm hệ 10 nảy một cái rồi bay từ công thức vào đúng ô của nó
-        const s10Ready = filled + 620 + 320 + 3 * 85 + 260;
-        at(s10Ready - 200, () => calcResultValue.classList.add('value-pulse'));
+        const s10Ready = computeDone + 500 + 3 * 120 + 420;
+        at(s10Ready - 320, () => calcResultValue.classList.add('value-pulse'));
         at(s10Ready, () => {
             calcResultValue.classList.remove('value-pulse');
             flyToken(score10.toFixed(2), calcResultValue, resScore10, 0, 700, guard(() => {
@@ -792,17 +869,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 4. Công thức xong việc thì thu gọn lại, nhường chỗ cho bảng điểm trôi lên,
         //    rồi canh lại khung hình vì bảng vừa ngắn đi một khúc
-        const collapse = s10Ready + 850;
-        at(collapse, () => collapseStage(600));
-        at(collapse + 620, () => scrollToFit(resultsContainer));
+        const collapse = s10Ready + 1200;
+        at(collapse, () => collapseStage(700));
+        at(collapse + 820, () => scrollToFit(resultsContainer));
 
         // 5. Layout đứng yên rồi mới tách: hệ 10 nhân ra 2 BẢN SAO của chính nó,
         //    một bản bay sang ô điểm chữ, một bản bay lên ô hệ 4 (chưa đổi giá trị vội)
-        const split = collapse + 950;
-        const LETTER_FLIGHT = 680;
-        const SCORE4_FLIGHT = 820;
+        const split = collapse + 1250;
+        // Hai bản sao bay lệch nhau hẳn ra: điểm chữ đáp trước, hệ 4 đáp sau,
+        // để mắt bám từng cái một thay vì hai thứ cùng động một lúc
+        const LETTER_FLIGHT = 900;
+        const SCORE4_FLIGHT = 1150;
         const copy = score10.toFixed(2);
-        at(split - 250, () => resScore10.classList.add('value-pulse'));
+        at(split - 420, () => resScore10.classList.add('value-pulse'));
         at(split, () => {
             resScore10.classList.remove('value-pulse');
             flyToken(copy, resScore10, resLetter, 0, LETTER_FLIGHT, guard(() => {
@@ -818,31 +897,44 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // 6. Bản sao đáp xuống rồi mới quay số biến thành giá trị thật — điểm chữ đi trước
-        const letterMorph = split + LETTER_FLIGHT + 140;
+        // Bản sao ngồi mờ hẳn 420ms cho thấy rõ "đây chưa phải giá trị thật" rồi mới quay
+        const letterMorph = split + LETTER_FLIGHT + 420;
         at(letterMorph, () => {
             resLetter.classList.remove('just-copied');
-            revealChars(resLetter, letterGrade, 300, 100, token);
+            revealChars(resLetter, letterGrade, 620, 170, token);
         });
 
-        // 7. Điểm chữ chốt xong mới tới lượt hệ 4 quay số (ký tự cuối khoá + nhịp rơi 420ms)
-        const letterDone = letterMorph + 300 + (letterGrade.length - 1) * 100 + 420;
-        const score4Morph = letterDone + 160;
+        // 7. Điểm chữ chốt xong, im lặng 700ms rồi mới tới lượt hệ 4 quay số
+        const letterDone = letterMorph + 620 + (letterGrade.length - 1) * 170 + 520;
+        const score4Morph = letterDone + 700;
+        // Tim đập dồn dập hẳn lên 1.1 giây trước khi con số hệ 4 chốt
+        at(score4Morph - 1100, () => {
+            mainResultCard.classList.remove('suspense-pulse');
+            mainResultCard.classList.add('suspense-rush');
+        });
         at(score4Morph, () => {
             resScore4.classList.remove('just-copied');
-            revealChars(resScore4, score4.toFixed(2), 380, 120, token);
+            // Cú chốt quay lâu nhất trong cả màn — đây là con số ai cũng chờ
+            revealChars(resScore4, score4.toFixed(2), 900, 190, token);
         });
 
         // 8. Hệ 4 vừa chốt là đóng mộc cái đùng, xong mới tới phần lời nhắn
-        const score4Done = score4Morph + 380 + 3 * 120 + 380;
+        const score4Done = score4Morph + 900 + 3 * 190 + 520;
         at(score4Done, () => {
+            mainResultCard.classList.remove('suspense-rush');
             resScore4.classList.remove('stamp-hit');
             mainResultCard.classList.remove('stamped');
             void resScore4.offsetWidth; // Reflow để đóng mộc lại được từ đầu ở lượt tính sau
             resScore4.classList.add('stamp-hit');
             mainResultCard.classList.add('stamped');
+
+            // Mộc nện xuống: cả khung rung một phát, màn loé trắng, rồi đèn bật lại
+            document.body.classList.add('calc-lights-up', 'stamp-quake', 'stamp-flash');
+            setTimeout(() => document.body.classList.remove('stamp-quake', 'stamp-flash'), 560);
+            setTimeout(() => document.body.classList.remove('calc-focus', 'calc-lights-up'), 740);
         });
 
-        at(score4Done + 520, () => {
+        at(score4Done + 850, () => {
             resetStage();
             onDone();
         });
@@ -1026,4 +1118,125 @@ document.addEventListener('DOMContentLoaded', () => {
     window.matchMedia('(display-mode: standalone)').addEventListener('change', function (e) {
         if (e.matches) daCaiXong();
     });
+})();
+
+/* ====================================================
+   HƯỚNG DẪN NHANH — chỉ chạy lần đầu người dùng vào web
+   ==================================================== */
+(function initTour() {
+    const KEY = 'tinhdiem4-da-xem-huong-dan';
+    const tour = document.getElementById('tour');
+    if (!tour) return;
+
+    const ring = document.getElementById('tour-ring');
+    const card = document.getElementById('tour-card');
+    const elCount = document.getElementById('tour-count');
+    const elTitle = document.getElementById('tour-title');
+    const elText = document.getElementById('tour-text');
+    const elDots = document.getElementById('tour-dots');
+    const btnNext = document.getElementById('tour-next');
+    const btnSkip = document.getElementById('tour-skip');
+
+    const ALL = [
+        {
+            id: 'btn-settings',
+            title: '🎬 Chọn kiểu ra đáp án',
+            text: 'Bấm nút này để đổi giữa "Ra liền" và "Hồi hộp" — kiểu hồi hộp sẽ chạy nguyên màn bấm máy, quay số rồi mới lộ điểm.'
+        },
+        {
+            id: 'btn-install',
+            title: '📲 Tải app về máy',
+            text: 'Cài về như một app riêng: mở nhanh hơn, và không có mạng vẫn tính điểm được như thường.'
+        },
+        {
+            id: 'btn-share',
+            title: '🔗 Rủ bạn bè cùng dùng',
+            text: 'Lấy link hoặc mã QR ở đây, gửi cho bạn quét một cái là vào được ngay.'
+        }
+    ];
+
+    let steps = [];
+    let i = 0;
+
+    function place() {
+        if (!steps.length) return;
+        const r = steps[i].el.getBoundingClientRect();
+        const PAD = 8;
+        ring.style.top = `${r.top - PAD}px`;
+        ring.style.left = `${r.left - PAD}px`;
+        ring.style.width = `${r.width + PAD * 2}px`;
+        ring.style.height = `${r.height + PAD * 2}px`;
+
+        // Thẻ hướng dẫn nằm ngay dưới nút, canh giữa theo nút nhưng luôn chừa lề 12px
+        const w = Math.min(300, window.innerWidth - 24);
+        const wantLeft = r.left + r.width / 2 - w / 2;
+        card.style.width = `${w}px`;
+        card.style.top = `${r.bottom + 16}px`;
+        card.style.left = `${Math.max(12, Math.min(wantLeft, window.innerWidth - w - 12))}px`;
+    }
+
+    function show() {
+        steps.forEach((s, n) => s.el.classList.toggle('tour-spot', n === i));
+        elCount.textContent = `Bước ${i + 1}/${steps.length}`;
+        elTitle.textContent = steps[i].title;
+        elText.textContent = steps[i].text;
+        elDots.innerHTML = steps
+            .map((_, n) => `<i class="tour-dot${n === i ? ' is-on' : ''}"></i>`)
+            .join('');
+        btnNext.textContent = i === steps.length - 1 ? 'Hiểu rồi!' : 'Tiếp theo';
+
+        place();
+        card.classList.remove('tour-card-in');
+        void card.offsetWidth; // Reflow để thẻ bật lại từ đầu ở mỗi bước
+        card.classList.add('tour-card-in');
+    }
+
+    function done() {
+        tour.hidden = true;
+        document.body.classList.remove('tour-open');
+        steps.forEach((s) => s.el.classList.remove('tour-spot'));
+        window.removeEventListener('resize', place);
+        try { localStorage.setItem(KEY, '1'); } catch (e) {}
+    }
+
+    btnNext.addEventListener('click', () => {
+        if (i < steps.length - 1) { i++; show(); } else { done(); }
+    });
+    btnSkip.addEventListener('click', done);
+    tour.addEventListener('click', (e) => { if (e.target === tour) done(); });
+
+    // Chờ một nhịp cho trang vào xong (và cho nút cài app kịp hiện nếu máy cho cài).
+    // Bước nào không có nút thật trên màn thì bỏ luôn, không chỉ vào chỗ trống.
+    function start() {
+        // Bước nào không có nút thật trên màn thì bỏ luôn, không chỉ vào chỗ trống
+        steps = ALL
+            .map((s) => Object.assign({}, s, { el: document.getElementById(s.id) }))
+            .filter((s) => s.el && !s.el.hidden);
+        if (!steps.length) return;
+
+        // Toast nhắc cài app để lát nữa, giờ nhường màn cho hướng dẫn
+        const toast = document.getElementById('install-toast');
+        if (toast) toast.hidden = true;
+
+        i = 0;
+        tour.hidden = false;
+        document.body.classList.add('tour-open');
+        window.addEventListener('resize', place);
+        show();
+    }
+
+    // Xem lại bất cứ lúc nào từ nút tuỳ chỉnh
+    const btnAgain = document.getElementById('btn-tour-again');
+    const modalSettings = document.getElementById('modal-settings');
+    if (btnAgain) {
+        btnAgain.addEventListener('click', () => {
+            if (modalSettings) modalSettings.classList.remove('active');
+            setTimeout(start, 260); // Chờ modal đóng hẳn rồi mới tắt đèn
+        });
+    }
+
+    // Lần đầu vào web thì tự chạy, chờ một nhịp cho trang vào xong
+    // (và cho nút cài app kịp hiện nếu máy cho cài)
+    try { if (localStorage.getItem(KEY) === '1') return; } catch (e) {}
+    setTimeout(start, 1400);
 })();

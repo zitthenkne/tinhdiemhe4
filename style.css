@@ -460,20 +460,13 @@ body::before {
    ---------------------------------------------------- */
 .results-wrapper {
     width: 100%;
-    max-height: 0;
-    opacity: 0;
-    transform: translateY(20px);
-    overflow: hidden;
-    transition: max-height 0.8s cubic-bezier(0.19, 1, 0.22, 1), 
-                opacity 0.8s ease, 
-                transform 0.8s cubic-bezier(0.19, 1, 0.22, 1);
+    /* Không animate chiều cao: max-height làm reflow cả trang mỗi frame -> giật.
+       Phần "trượt xuống" đã do hoạt hoạ vào của từng card lo (chỉ transform + opacity). */
+    display: none;
 }
 
 .results-wrapper.show {
-    /* Nới trần vì sân khấu công thức làm phần kết quả cao thêm, tránh bị cắt trên máy nhỏ */
-    max-height: 1600px;
-    opacity: 1;
-    transform: translateY(0);
+    display: block;
     overflow: visible; /* Let chibi overflow */
 }
 
@@ -543,7 +536,9 @@ body::before {
 }
 
 /* Khối mốc điểm hệ 4 kế tiếp */
+/* Hiện ra là đẩy card dài thêm, nên cho nó mờ dần vào cho đỡ giật cục */
 .next-goal {
+    animation: next-goal-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
     margin-top: 14px;
     padding: 13px 16px;
     border-radius: 14px;
@@ -563,6 +558,11 @@ body::before {
 .next-goal-text strong {
     color: #ff3e6c;
     font-weight: 800;
+}
+
+@keyframes next-goal-in {
+    from { opacity: 0; transform: translate3d(0, -6px, 0); }
+    to   { opacity: 1; transform: translate3d(0, 0, 0); }
 }
 
 /* Khi đã đạt trần 4.0 thì chuyển sang tông vàng "về đích" */
@@ -672,6 +672,83 @@ body::before {
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     cursor: pointer;
     animation: cute-bob 4s ease-in-out infinite;
+    position: relative;
+}
+
+/* Sau khi kết quả chốt xong: CTA "khám phá tiện ích" bật lên một nhịp có nảy,
+   quét một vệt sáng, toả 2 vòng sóng rồi giữ lại tông hồng đậm hơn cho dễ thấy. */
+.btn-discovery.cta-arrive {
+    background-color: rgba(255, 244, 247, 0.92);
+    /* Vệt sáng chạy ngang: chỉ đổi background-position nên không đụng layout */
+    background-image: linear-gradient(115deg,
+                rgba(255, 255, 255, 0) 34%,
+                rgba(255, 255, 255, 0.95) 46%,
+                rgba(255, 214, 228, 0.95) 53%,
+                rgba(255, 255, 255, 0) 66%);
+    background-size: 250% 100%;
+    background-repeat: no-repeat;
+    background-position: -55% 0;
+    border-color: rgba(255, 62, 108, 0.62);
+    box-shadow: 0 10px 30px rgba(255, 62, 108, 0.26),
+                0 0 0 3px rgba(255, 142, 158, 0.16),
+                inset 0 1px 0 rgba(255, 255, 255, 0.95);
+    animation: cta-arrive 0.72s cubic-bezier(0.34, 1.32, 0.5, 1) both,
+               cta-shine 0.95s ease-out 0.45s both,
+               cute-bob 4s ease-in-out 1.5s infinite;
+}
+
+/* Hai vòng sóng toả ra lệch nhịp nhau rồi tắt hẳn */
+.btn-discovery.cta-arrive::before,
+.btn-discovery.cta-arrive::after {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    border-radius: inherit;
+    border: 1.6px solid rgba(255, 62, 108, 0.55);
+    pointer-events: none;
+    opacity: 0;
+}
+
+.btn-discovery.cta-arrive::before { animation: cta-ring 1.15s ease-out 0.34s 2 both; }
+.btn-discovery.cta-arrive::after  { animation: cta-ring 1.15s ease-out 0.64s 2 both; }
+
+.btn-discovery.cta-arrive .discovery-icon-sparkle {
+    animation: cta-sparkle 0.85s cubic-bezier(0.22, 1, 0.36, 1) 0.24s both;
+}
+
+.btn-discovery.cta-arrive .discovery-icon-arrow {
+    animation: cta-arrow-nudge 0.75s ease-in-out 0.8s 3;
+}
+
+@keyframes cta-arrive {
+    0%   { opacity: 0.35; transform: translate3d(0, 14px, 0) scale(0.9) rotate(-1.6deg); }
+    45%  { opacity: 1;    transform: translate3d(0, -7px, 0) scale(1.06) rotate(0.9deg); }
+    72%  { opacity: 1;    transform: translate3d(0, 1px, 0)  scale(0.985) rotate(-0.3deg); }
+    100% { opacity: 1;    transform: translate3d(0, 0, 0) scale(1) rotate(0deg); }
+}
+
+@keyframes cta-shine {
+    from { background-position: -55% 0; }
+    to   { background-position: 165% 0; }
+}
+
+@keyframes cta-ring {
+    0%   { opacity: 0.7; transform: scale(1); }
+    100% { opacity: 0;   transform: scale(1.18); }
+}
+
+@keyframes cta-sparkle {
+    0%   { transform: scale(0.55) rotate(-30deg);
+           filter: drop-shadow(0 2px 4px rgba(255, 184, 0, 0.35)); }
+    45%  { transform: scale(1.5) rotate(14deg);
+           filter: drop-shadow(0 0 12px rgba(255, 196, 0, 0.95)); }
+    100% { transform: scale(1) rotate(0deg);
+           filter: drop-shadow(0 2px 4px rgba(255, 184, 0, 0.35)); }
+}
+
+@keyframes cta-arrow-nudge {
+    0%, 100% { transform: translateX(0); }
+    50%      { transform: translateX(6px); }
 }
 
 .btn-discovery:hover {
@@ -1359,6 +1436,23 @@ body::before {
 @media (prefers-reduced-motion: reduce) {
     .btn-discovery { animation: none; }
     .btn-calculate::after { transition: none; }
+    .btn-discovery.cta-arrive,
+    .btn-discovery.cta-arrive::before,
+    .btn-discovery.cta-arrive::after,
+    .btn-discovery.cta-arrive .discovery-icon-sparkle,
+    .btn-discovery.cta-arrive .discovery-icon-arrow { animation: none; }
+    .btn-discovery.cta-arrive::before,
+    .btn-discovery.cta-arrive::after { opacity: 0; }
+    .next-goal { animation: none; }
+
+    .results-wrapper.show .main-result-card,
+    .results-wrapper.show .main-score-value,
+    .results-wrapper.show .sub-results-row,
+    .results-wrapper.show .discovery-section.fanpage-section,
+    .results-wrapper.show .chibi-result {
+        animation: none;
+        opacity: 1;
+    }
 }
 
 /* ====================================================
@@ -1708,52 +1802,53 @@ body::before {
     animation: buttonPop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
+/* Chỉ translate + opacity: scale() bắt các card kính mờ blur lại mỗi frame -> giật.
+   Easing easeOutQuint, không nảy quá đà cho nhẹ nhàng hơn. */
 @keyframes slideUpFadePop {
-    0% { opacity: 0; transform: translateY(40px) scale(0.95); }
-    100% { opacity: 1; transform: translateY(0) scale(1); }
+    0% { opacity: 0; transform: translate3d(0, 16px, 0); }
+    100% { opacity: 1; transform: translate3d(0, 0, 0); }
 }
 
 @keyframes scorePop {
-    0% { transform: scale(0.5); opacity: 0; }
-    60% { transform: scale(1.2); opacity: 1; }
-    100% { transform: scale(1); opacity: 1; }
+    0% { opacity: 0; transform: scale(0.9); }
+    60% { opacity: 1; transform: scale(1.03); }
+    100% { opacity: 1; transform: scale(1); }
 }
 
 .results-wrapper.show .main-result-card {
     opacity: 0;
-    animation: slideUpFadePop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    animation: slideUpFadePop 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 .results-wrapper.show .main-score-value {
-    animation: scorePop 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.15s forwards;
+    animation: scorePop 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.08s forwards;
     opacity: 0;
 }
 
 .results-wrapper.show .sub-results-row {
     opacity: 0;
-    animation: slideUpFadePop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.15s forwards;
+    animation: slideUpFadePop 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.08s forwards;
 }
 
 .results-wrapper.show .discovery-section.fanpage-section {
     opacity: 0;
-    animation: slideUpFadePop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.3s forwards;
+    animation: slideUpFadePop 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.16s forwards;
 }
 
 .results-wrapper.show .chibi-result {
     opacity: 0;
-    animation: slideUpFadePop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.45s forwards;
+    animation: slideUpFadePop 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.24s forwards;
 }
 /* Tang d? n?y cho n�t t�nh di?m */
 @keyframes buttonPopWow {
     0% { transform: scale(1); }
-    30% { transform: scale(0.85); box-shadow: 0 0 0 rgba(125, 185, 247, 0); }
-    50% { transform: scale(1.15); box-shadow: 0 10px 30px rgba(125, 185, 247, 0.6); }
-    70% { transform: scale(0.95); }
+    35% { transform: scale(0.955); }
+    70% { transform: scale(1.035); }
     100% { transform: scale(1); }
 }
 
 .btn-calculate.calculated {
-    animation: buttonPopWow 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    animation: buttonPopWow 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /* Th�m l?p l�nh cho th? k?t qu? */
@@ -1768,13 +1863,15 @@ body::before {
 }
 
 @keyframes shakeBad {
-    0%, 100% { transform: translateX(0); }
-    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-    20%, 40%, 60%, 80% { transform: translateX(5px); }
+    0%, 100% { transform: translate3d(0, 0, 0); }
+    20% { transform: translate3d(-4px, 0, 0); }
+    40% { transform: translate3d(3px, 0, 0); }
+    60% { transform: translate3d(-2px, 0, 0); }
+    80% { transform: translate3d(1px, 0, 0); }
 }
 
 .main-result-card.shake {
-    animation: shakeBad 0.6s ease-in-out;
+    animation: shakeBad 0.5s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 
@@ -2078,3 +2175,360 @@ body::before {
     from { transform: scale(0.94); opacity: 0.9; }
     to   { transform: scale(1.09); opacity: 0; }
 }
+
+
+/* ====================================================
+   SÂN KHẤU HỒI HỘP — BẢN NÂNG CẤP
+   ==================================================== */
+
+/* --- 1. Tắt đèn cả trang, chừa mỗi khung kết quả sáng lên ---
+   Màn tối phải nằm TRONG .app-container: thẻ đó có z-index: 1 nên tự tạo
+   stacking context, đặt ở body thì khung kết quả không trồi lên trên được. */
+.app-container::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 150;
+    pointer-events: none;
+    opacity: 0;
+    background: radial-gradient(ellipse at 50% 42%,
+                rgba(16, 10, 30, 0.16) 0%,
+                rgba(16, 10, 30, 0.62) 78%);
+}
+
+body.calc-focus .app-container::after {
+    animation: veil-in 0.6s ease both;
+}
+
+body.calc-focus.calc-lights-up .app-container::after {
+    animation: veil-out 0.7s ease both;
+}
+
+@keyframes veil-in  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes veil-out { from { opacity: 1; } to { opacity: 0; } }
+
+.results-container {
+    transition: box-shadow 0.6s ease;
+}
+
+body.calc-focus .results-container {
+    z-index: 160;
+    box-shadow: 0 30px 90px rgba(20, 8, 40, 0.5),
+                0 0 0 1px rgba(255, 255, 255, 0.55),
+                0 0 70px rgba(255, 142, 158, 0.4);
+}
+
+/* --- 2. Công thức được "viết" ra từ trái sang --- */
+.calc-formula.writing {
+    animation: formula-write 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes formula-write {
+    from { clip-path: inset(-40% 100% -40% 0); opacity: 0.3; }
+    to   { clip-path: inset(-40% -20% -40% 0); opacity: 1; }
+}
+
+/* --- 3. "Đang bấm máy": vệt sáng quét qua + công thức rung theo nhịp --- */
+.calc-stage {
+    position: relative;
+}
+
+.calc-stage.computing {
+    overflow: hidden;
+}
+
+.calc-stage.computing::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background: linear-gradient(100deg,
+                rgba(255, 255, 255, 0) 42%,
+                rgba(255, 232, 240, 0.95) 50%,
+                rgba(255, 255, 255, 0) 58%);
+    background-size: 320% 100%;
+    animation: stage-sweep 0.62s ease-in-out 3 both;
+}
+
+@keyframes stage-sweep {
+    from { background-position: -70% 0; }
+    to   { background-position: 180% 0; }
+}
+
+.calc-formula.computing {
+    animation: formula-compute 0.62s ease-in-out 3 both;
+}
+
+@keyframes formula-compute {
+    0%, 100% { transform: scale(1) translateX(0);
+               text-shadow: 0 0 0 rgba(255, 62, 108, 0); }
+    25%      { transform: scale(1.05) translateX(-2px);
+               text-shadow: 0 0 20px rgba(255, 62, 108, 0.7); }
+    75%      { transform: scale(1.05) translateX(2px);
+               text-shadow: 0 0 20px rgba(255, 62, 108, 0.7); }
+}
+
+/* --- 4. Trống dồn: tim đập nhanh dần trước cú chốt ---
+   Cần đủ 3 class để thắng ".results-wrapper.show .main-result-card" (rule đó
+   chiếm cả animation lẫn opacity), nên phải khai lại opacity: 1 —
+   không thì card mất hút y như ghi chú ở phần đóng mộc. */
+.results-wrapper.show .main-result-card.suspense-pulse {
+    opacity: 1;
+    animation: suspense-pulse 0.9s ease-in-out infinite;
+}
+
+.results-wrapper.show .main-result-card.suspense-rush {
+    opacity: 1;
+    animation: suspense-rush 0.32s ease-in-out infinite;
+}
+
+@keyframes suspense-rush {
+    0%, 100% { transform: scale(1);
+               box-shadow: var(--card-shadow); }
+    50%      { transform: scale(1.014);
+               box-shadow: 0 18px 52px rgba(255, 62, 108, 0.55),
+                           0 0 36px rgba(255, 142, 158, 0.5); }
+}
+
+/* Ăn mừng / an ủi trước giờ cũng bị rule kia đè mất, khai lại cho chạy được */
+.results-wrapper.show .main-result-card.glow {
+    opacity: 1;
+    animation: glowPulse 1.5s ease-out;
+}
+
+.results-wrapper.show .main-result-card.shake {
+    opacity: 1;
+    animation: shakeBad 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* --- 5. Đóng mộc: cả khung chấn động + loé sáng một phát --- */
+body.stamp-quake .results-container {
+    animation: stamp-quake 0.46s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+}
+
+@keyframes stamp-quake {
+    0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+    14%      { transform: translate3d(-7px, 3px, 0) rotate(-0.45deg); }
+    32%      { transform: translate3d(6px, -3px, 0) rotate(0.4deg); }
+    52%      { transform: translate3d(-4px, 2px, 0) rotate(-0.22deg); }
+    72%      { transform: translate3d(3px, -1px, 0) rotate(0.12deg); }
+    88%      { transform: translate3d(-1px, 0, 0) rotate(0deg); }
+}
+
+body.stamp-flash::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 170;
+    pointer-events: none;
+    background: radial-gradient(circle at 50% 45%,
+                rgba(255, 255, 255, 0.55) 0%,
+                rgba(255, 226, 236, 0.4) 38%,
+                rgba(255, 226, 236, 0) 68%);
+    animation: stamp-flash 0.42s ease-out both;
+}
+
+@keyframes stamp-flash {
+    from { opacity: 0.85; }
+    to   { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .app-container::after,
+    body.stamp-flash::after { display: none; }
+
+    .calc-formula.writing,
+    .calc-formula.computing,
+    .calc-stage.computing::after,
+    body.stamp-quake .results-container,
+    .results-wrapper.show .main-result-card.suspense-pulse,
+    .results-wrapper.show .main-result-card.suspense-rush { animation: none; }
+}
+
+
+/* ====================================================
+   HƯỚNG DẪN NHANH LẦN ĐẦU VÀO WEB
+   ==================================================== */
+.tour-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 9000;
+    background: rgba(28, 14, 40, 0.55);
+    animation: veil-in 0.35s ease both;
+}
+
+.tour-backdrop[hidden] { display: none; }
+
+body.tour-open { overflow: hidden; }
+
+/* Nút đang được chỉ tới thì trồi lên trên màn tối */
+.btn-share.tour-spot {
+    z-index: 9005;
+    background: rgba(255, 255, 255, 0.95);
+    color: #ff3e6c;
+}
+
+.tour-ring {
+    position: fixed;
+    z-index: 9002;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.95);
+    pointer-events: none;
+    /* Vòng sáng trượt sang nút kế tiếp thay vì nhảy cóc */
+    transition: top 0.38s cubic-bezier(0.22, 1, 0.36, 1),
+                left 0.38s cubic-bezier(0.22, 1, 0.36, 1),
+                width 0.38s cubic-bezier(0.22, 1, 0.36, 1),
+                height 0.38s cubic-bezier(0.22, 1, 0.36, 1);
+    animation: tour-ring-pulse 1.7s ease-in-out infinite;
+}
+
+@keyframes tour-ring-pulse {
+    0%, 100% { box-shadow: 0 0 0 4px rgba(255, 62, 108, 0.45),
+                           0 0 28px rgba(255, 142, 158, 0.7); }
+    50%      { box-shadow: 0 0 0 9px rgba(255, 62, 108, 0.2),
+                           0 0 38px rgba(255, 142, 158, 0.95); }
+}
+
+.tour-card {
+    position: fixed;
+    z-index: 9004;
+    box-sizing: border-box;
+    padding: 16px 18px 14px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px) saturate(170%);
+    -webkit-backdrop-filter: blur(20px) saturate(170%);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 20px 50px rgba(60, 25, 60, 0.32);
+    transition: top 0.38s cubic-bezier(0.22, 1, 0.36, 1),
+                left 0.38s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.tour-card.tour-card-in {
+    animation: tour-card-in 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes tour-card-in {
+    from { opacity: 0; transform: translate3d(0, -10px, 0) scale(0.97); }
+    to   { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+}
+
+.tour-step-count {
+    font-family: var(--font-normal);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    color: #ff8e9e;
+    text-transform: uppercase;
+}
+
+/* Quicksand chứ KHÔNG phải --font-rounded: font đó là Fredoka, không có bộ
+   tiếng Việt nên chữ có dấu bị rơi sang font dự phòng -> nhìn lệch tông hẳn.
+   --font-rounded chỉ nên dùng cho chỗ toàn số (điểm, công thức). */
+.tour-title {
+    font-family: var(--font-normal);
+    font-size: 1.02rem;
+    font-weight: 700;
+    color: #1f4664;
+    margin: 4px 0 6px;
+}
+
+.tour-text {
+    font-family: var(--font-normal);
+    font-size: 0.86rem;
+    line-height: 1.5;
+    color: #4b6584;
+    margin: 0;
+}
+
+.tour-dots {
+    display: flex;
+    gap: 6px;
+    margin: 14px 0 12px;
+}
+
+.tour-dot {
+    display: block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: rgba(255, 142, 158, 0.35);
+    transition: width 0.25s ease, background 0.25s ease, border-radius 0.25s ease;
+}
+
+.tour-dot.is-on {
+    width: 20px;
+    border-radius: 4px;
+    background: #ff3e6c;
+}
+
+.tour-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+.tour-skip,
+.tour-next {
+    font-family: var(--font-normal);
+    font-weight: 700;
+    font-size: 0.86rem;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.tour-skip {
+    background: none;
+    border: none;
+    color: #93a5b8;
+    padding: 9px 4px;
+}
+
+.tour-next {
+    background: var(--btn-gradient);
+    border: none;
+    color: var(--btn-text);
+    padding: 9px 20px;
+    box-shadow: 0 6px 16px rgba(125, 185, 247, 0.4);
+}
+
+.tour-next:active { transform: scale(0.96); }
+
+@media (prefers-reduced-motion: reduce) {
+    .tour-backdrop,
+    .tour-ring,
+    .tour-card.tour-card-in { animation: none; }
+    .tour-ring { box-shadow: 0 0 0 4px rgba(255, 62, 108, 0.45); }
+}
+
+/* Nút mở lại hướng dẫn, nằm trong modal tuỳ chỉnh */
+.btn-tour-again {
+    display: block;
+    width: 100%;
+    margin-top: 18px;
+    padding: 11px 16px;
+    border-radius: 50px;
+    font-family: var(--font-normal);
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #4b6584;
+    background: rgba(255, 255, 255, 0.7);
+    border: 1.5px solid rgba(255, 142, 158, 0.5);
+    cursor: pointer;
+    transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1),
+                background 0.2s ease, color 0.2s ease;
+}
+
+.btn-tour-again:hover {
+    background: rgba(255, 246, 248, 0.95);
+    color: #ff3e6c;
+}
+
+.btn-tour-again:active { transform: scale(0.97); }
+
+/* Mỗi nút nhích một kiểu cho hợp với ký hiệu của nó (mặc định .btn-share đẩy ngang) */
+.btn-install:hover .share-icon { transform: translateY(2px); }
+.btn-settings:hover .share-icon { transform: scale(1.08); }
